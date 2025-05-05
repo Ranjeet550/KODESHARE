@@ -180,7 +180,7 @@ const HeroCarousel = ({ onCreateClick, onCustomIdSubmit, customId, setCustomId, 
         <div className="mb-12 max-w-2xl mx-auto backdrop-blur-md bg-white/10 p-2 rounded-2xl shadow-xl border border-white/10">
           <form onSubmit={onCustomIdSubmit} className="flex flex-col sm:flex-row items-center p-2 rounded-xl">
             <div className="flex items-center w-full bg-white/10 rounded-xl px-2">
-              <span className="text-white font-mono text-lg px-3 py-2">localhost:5174/</span>
+              
               <input
                 type="text"
                 value={customId}

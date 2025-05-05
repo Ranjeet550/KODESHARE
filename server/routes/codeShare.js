@@ -32,9 +32,19 @@ router.post('/', authenticateUser, async (req, res) => {
 
     // Calculate expiration date
     let expiresAt = null;
-    if (expiresIn) {
+
+    // For logged-in users, don't set expiration unless explicitly requested
+    if (req.user) {
+      // Only set expiration if explicitly requested by the user
+      if (expiresIn) {
+        expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + parseInt(expiresIn));
+      }
+      // Otherwise, no expiration (null)
+    } else {
+      // For anonymous users, always set 24-hour expiration
       expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + parseInt(expiresIn));
+      expiresAt.setHours(expiresAt.getHours() + (expiresIn ? parseInt(expiresIn) : 24));
     }
 
     // Check if custom ID is provided and not already in use
@@ -93,11 +103,28 @@ router.get('/:id', async (req, res) => {
       // and looks like a valid custom ID
       if (!mongoose.Types.ObjectId.isValid(id) && /^[a-zA-Z0-9_-]{1,50}$/.test(id)) {
         try {
+          // Check if user is authenticated
+          const token = req.header('x-auth-token');
+          let userId = null;
+
+          try {
+            if (token) {
+              const decoded = jwt.verify(token, process.env.JWT_SECRET);
+              userId = decoded.userId;
+            }
+          } catch (tokenError) {
+            // Invalid token, continue as anonymous
+          }
+
           codeShare = new CodeShare({
             title: 'Untitled Code',
             code: '// Start coding here...',
             language: 'javascript',
             isPublic: true,
+            owner: userId,
+            // For anonymous users, set expiration to 24 hours
+            // For logged-in users, no expiration (null)
+            expiresAt: userId ? null : new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
             customId: id
           });
 

@@ -27,9 +27,13 @@ const codeShareSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     default: function() {
-      // Default expiration: 24 hours from creation
-      const now = new Date();
-      return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      // Default expiration: 24 hours from creation for anonymous users
+      // For logged-in users (with owner), no expiration (null)
+      if (!this.owner) {
+        const now = new Date();
+        return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      }
+      return null; // No expiration for logged-in users
     }
   },
   accessCount: {

@@ -11,6 +11,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import UserProfile from './pages/UserProfile';
+import ForgotPassword from './pages/ForgotPassword';
+import VerifyOTP from './pages/VerifyOTP';
+import ResetPassword from './pages/ResetPassword';
 import NotFound from './pages/NotFound';
 
 // Context
@@ -27,12 +30,15 @@ function App() {
         <Router>
           <div className="min-h-screen bg-gray-50 dark:bg-dark-800 text-gray-900 dark:text-gray-100 transition-colors duration-200">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main className={`${window.location.pathname === '/' ? '' : 'container mx-auto px-4 py-8 mt-14'}`}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/code/:id" element={<CodeEditor />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/verify-otp" element={<VerifyOTP />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/dashboard" element={
                   <PrivateRoute>
                     <Dashboard />

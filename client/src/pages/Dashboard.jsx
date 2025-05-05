@@ -55,12 +55,13 @@ const Dashboard = () => {
       setCreating(true);
 
       // Create a new code share with default values
+      // For logged-in users, don't set expiration
       const response = await createCodeShare({
         title: 'Untitled Code',
         language: 'javascript',
         code: '// Start coding here...',
-        isPublic: true,
-        expiresIn: 24 // 24 hours
+        isPublic: true
+        // No expiresIn for logged-in users - their codeshares never expire
       });
 
       // Navigate to the code editor with the new code share ID
@@ -131,16 +132,7 @@ const Dashboard = () => {
               </p>
             </div>
 
-            <button
-              onClick={handleCreateNewCodeShare}
-              disabled={creating}
-              className="mt-6 md:mt-0 bg-[#F1BA88] hover:bg-[#F1BA88]/90 text-[#03A791] font-bold py-3 px-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed flex items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-              {creating ? 'Creating...' : 'Create New Share'}
-            </button>
+           
           </div>
 
           {/* Stats Cards */}

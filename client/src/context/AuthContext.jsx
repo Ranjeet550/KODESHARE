@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const checkLoggedIn = async () => {
       try {
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           setLoading(false);
           return;
@@ -23,10 +23,10 @@ export const AuthProvider = ({ children }) => {
 
         // Set auth token header
         axios.defaults.headers.common['x-auth-token'] = token;
-        
+
         // Get user data
         const res = await axios.get('/auth/me');
-        
+
         setUser(res.data);
         setIsAuthenticated(true);
         setLoading(false);
@@ -47,16 +47,16 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const res = await axios.post('/auth/register', formData);
-      
+
       // Save token to localStorage
       localStorage.setItem('token', res.data.token);
-      
+
       // Set auth token header
       axios.defaults.headers.common['x-auth-token'] = res.data.token;
-      
+
       setUser(res.data.user);
       setIsAuthenticated(true);
-      
+
       return res.data;
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
@@ -69,16 +69,16 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const res = await axios.post('/auth/login', formData);
-      
+
       // Save token to localStorage
       localStorage.setItem('token', res.data.token);
-      
+
       // Set auth token header
       axios.defaults.headers.common['x-auth-token'] = res.data.token;
-      
+
       setUser(res.data.user);
       setIsAuthenticated(true);
-      
+
       return res.data;
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -90,12 +90,48 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     // Remove token from localStorage
     localStorage.removeItem('token');
-    
+
     // Remove auth header
     delete axios.defaults.headers.common['x-auth-token'];
-    
+
     setUser(null);
     setIsAuthenticated(false);
+  };
+
+  // Request password reset (send OTP)
+  const forgotPassword = async (email) => {
+    try {
+      setError(null);
+      const res = await axios.post('/auth/forgot-password', { email });
+      return res.data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to send reset email');
+      throw err;
+    }
+  };
+
+  // Verify OTP
+  const verifyOTP = async (email, otp) => {
+    try {
+      setError(null);
+      const res = await axios.post('/auth/verify-otp', { email, otp });
+      return res.data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'OTP verification failed');
+      throw err;
+    }
+  };
+
+  // Reset password
+  const resetPassword = async (resetToken, newPassword) => {
+    try {
+      setError(null);
+      const res = await axios.post('/auth/reset-password', { resetToken, newPassword });
+      return res.data;
+    } catch (err) {
+      setError(err.response?.data?.message || 'Password reset failed');
+      throw err;
+    }
   };
 
   return (
@@ -107,7 +143,10 @@ export const AuthProvider = ({ children }) => {
         error,
         register,
         login,
-        logout
+        logout,
+        forgotPassword,
+        verifyOTP,
+        resetPassword
       }}
     >
       {children}

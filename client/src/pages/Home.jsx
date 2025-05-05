@@ -89,12 +89,14 @@ const Home = () => {
 
         // Create a code share with the custom ID
         try {
+          // For anonymous users, set 24-hour expiration
+          // For logged-in users, no expiration is set (handled on server)
           await createCodeShare({
             title: 'Untitled Code',
             language: 'javascript',
             code: '// Start coding here...',
             isPublic: true,
-            expiresIn: 24, // 24 hours
+            expiresIn: 24, // 24 hours (only applies to anonymous users)
             customId: customId.trim()
           });
 
@@ -109,12 +111,14 @@ const Home = () => {
       }
 
       // Create a new code share with default values (no custom ID)
+      // For anonymous users, set 24-hour expiration
+      // For logged-in users, no expiration is set (handled on server)
       const response = await createCodeShare({
         title: 'Untitled Code',
         language: 'javascript',
         code: '// Start coding here...',
         isPublic: true,
-        expiresIn: 24 // 24 hours
+        expiresIn: 24 // 24 hours (only applies to anonymous users)
       });
 
       // Navigate to the code editor with the new code share ID
@@ -149,7 +153,7 @@ const Home = () => {
       <CanvasAnimation />
 
       {/* Hero Carousel Section */}
-      <div ref={heroRef} className="w-full mb-24">
+      <div ref={heroRef} className="w-full h-screen">
         <HeroCarousel
           onCreateClick={handleCreateNewCodeShare}
           onCustomIdSubmit={handleDirectUrlInput}
