@@ -34,20 +34,20 @@ const AnimatedBackground = () => {
 
       // Colors - use primary and secondary colors from the theme
       if (i % 3 === 0) {
-        // Primary color (blue-ish)
-        colorArray[i] = 0.05;
-        colorArray[i + 1] = 0.3;
-        colorArray[i + 2] = 0.8;
+        // Primary color (dark blue - #003092)
+        colorArray[i] = 0.0;
+        colorArray[i + 1] = 0.19;
+        colorArray[i + 2] = 0.57;
       } else if (i % 5 === 0) {
-        // Secondary color (purple-ish)
-        colorArray[i] = 0.5;
-        colorArray[i + 1] = 0.2;
-        colorArray[i + 2] = 0.8;
+        // Secondary color (teal - #00879E)
+        colorArray[i] = 0.0;
+        colorArray[i + 1] = 0.53;
+        colorArray[i + 2] = 0.62;
       } else {
-        // White/light color
-        colorArray[i] = 0.8;
-        colorArray[i + 1] = 0.8;
-        colorArray[i + 2] = 0.9;
+        // Accent color (peach - #FFAB5B)
+        colorArray[i] = 1.0;
+        colorArray[i + 1] = 0.67;
+        colorArray[i + 2] = 0.36;
       }
     }
 

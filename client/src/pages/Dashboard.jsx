@@ -1,24 +1,75 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
 import { getUserCodeShares, createCodeShare, deleteCodeShare } from '../utils/api';
-import CodeGharLogo from '../components/CodeGharLogo';
+import KodeshareIcon from '../components/KodeshareIcon';
+import { gsap } from 'gsap';
 
 const Dashboard = () => {
   const [codeShares, setCodeShares] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [filterType, setFilterType] = useState('all'); // 'all', 'public', 'private'
+  const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest', 'views'
   const [stats, setStats] = useState({
     totalShares: 0,
     totalViews: 0,
-    publicShares: 0
+    publicShares: 0,
+    privateShares: 0,
+    recentActivity: 0
   });
 
   const { user } = useContext(AuthContext);
   const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
+
+  // Refs for animations
+  const headerRef = useRef(null);
+  const statsRef = useRef(null);
+  const contentRef = useRef(null);
+
+  // Animation effect
+  useEffect(() => {
+    if (!loading) {
+      // Animate header
+      gsap.fromTo(
+        headerRef.current,
+        { opacity: 0, y: -20 },
+        { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }
+      );
+
+      // Animate stats
+      gsap.fromTo(
+        statsRef.current?.children || [],
+        { opacity: 0, y: 20, scale: 0.9 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.4,
+          stagger: 0.1,
+          ease: 'back.out(1.7)',
+          delay: 0.3
+        }
+      );
+
+      // Animate content
+      gsap.fromTo(
+        contentRef.current?.children || [],
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          stagger: 0.05,
+          ease: 'power2.out',
+          delay: 0.5
+        }
+      );
+    }
+  }, [loading]);
 
   // Fetch user's code shares
   useEffect(() => {
@@ -32,11 +83,21 @@ const Dashboard = () => {
         if (data && data.length > 0) {
           const totalViews = data.reduce((sum, share) => sum + (share.accessCount || 0), 0);
           const publicShares = data.filter(share => share.isPublic).length;
+          const privateShares = data.length - publicShares;
+
+          // Calculate recent activity (shares created in the last 7 days)
+          const oneWeekAgo = new Date();
+          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+          const recentActivity = data.filter(share =>
+            new Date(share.createdAt) > oneWeekAgo
+          ).length;
 
           setStats({
             totalShares: data.length,
             totalViews,
-            publicShares
+            publicShares,
+            privateShares,
+            recentActivity
           });
         }
       } catch (err) {
@@ -80,6 +141,18 @@ const Dashboard = () => {
         await deleteCodeShare(id);
         // Update the list
         setCodeShares(codeShares.filter(share => share._id !== id));
+
+        // Update stats
+        setStats(prev => ({
+          ...prev,
+          totalShares: prev.totalShares - 1,
+          publicShares: codeShares.find(share => share._id === id)?.isPublic
+            ? prev.publicShares - 1
+            : prev.publicShares,
+          privateShares: !codeShares.find(share => share._id === id)?.isPublic
+            ? prev.privateShares - 1
+            : prev.privateShares
+        }));
       } catch (err) {
         setError(err.message || 'Failed to delete code share');
       }
@@ -90,6 +163,29 @@ const Dashboard = () => {
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Filter code shares
+  const getFilteredCodeShares = () => {
+    let filtered = [...codeShares];
+
+    // Apply filter
+    if (filterType === 'public') {
+      filtered = filtered.filter(share => share.isPublic);
+    } else if (filterType === 'private') {
+      filtered = filtered.filter(share => !share.isPublic);
+    }
+
+    // Apply sorting
+    if (sortBy === 'newest') {
+      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sortBy === 'oldest') {
+      filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sortBy === 'views') {
+      filtered.sort((a, b) => (b.accessCount || 0) - (a.accessCount || 0));
+    }
+
+    return filtered;
   };
 
   return (
@@ -132,7 +228,7 @@ const Dashboard = () => {
               </p>
             </div>
 
-           
+
           </div>
 
           {/* Stats Cards */}

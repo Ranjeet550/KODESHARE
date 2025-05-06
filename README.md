@@ -1,8 +1,8 @@
-# Codeghar - Real-time Code Collaboration Platform
+# Kodeshare - Real-time Code Collaboration Platform
 
-![Codeghar Logo](/client/public/codeghar-icon.svg)
+![Kodeshare Logo](/client/public/kodeshare-icon.svg)
 
-Codeghar is a modern, real-time code collaboration platform that allows developers to share, edit, and execute code together. With features like custom URL code sharing, real-time collaboration, and code execution, Codeghar provides a seamless environment for pair programming and teaching.
+Kodeshare is a modern, real-time code collaboration platform that allows developers to share, edit, and execute code together. With features like custom URL code sharing, real-time collaboration, and code execution, Kodeshare provides a seamless environment for pair programming and teaching.
 
 ## Features
 
@@ -35,10 +35,10 @@ Codeghar is a modern, real-time code collaboration platform that allows develope
 - bcrypt (Password hashing)
 
 ## Color Palette
-- Peach: #F1BA88
-- Light Yellow-Green: #E9F5BE
-- Mint Green: #81E7AF
-- Teal: #03A791
+- Dark Blue: #003092
+- Teal: #00879E
+- Peach: #FFAB5B
+- Light Cream: #FFF2DB
 
 ## Installation
 
@@ -51,7 +51,7 @@ Codeghar is a modern, real-time code collaboration platform that allows develope
 1. Clone the repository
 ```bash
 git clone https://github.com/Ranjeet550/codeghar.git
-cd codeghar
+cd kodeshare
 ```
 
 2. Install dependencies for the root project, client, and server

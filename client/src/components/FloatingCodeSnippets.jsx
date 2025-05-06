@@ -5,27 +5,27 @@ const codeSnippets = [
   {
     language: 'javascript',
     code: `function hello() {\n  console.log("Hello, world!");\n}`,
-    color: 'bg-yellow-500'
+    color: 'bg-primary-700'
   },
   {
     language: 'python',
     code: `def greet():\n    print("Hello, world!")`,
-    color: 'bg-blue-500'
+    color: 'bg-secondary-700'
   },
   {
     language: 'java',
     code: `public void sayHello() {\n    System.out.println("Hello!");\n}`,
-    color: 'bg-red-500'
+    color: 'bg-accent-700'
   },
   {
     language: 'html',
     code: `<div class="greeting">\n  <h1>Hello World</h1>\n</div>`,
-    color: 'bg-orange-500'
+    color: 'bg-primary-600'
   },
   {
     language: 'css',
     code: `.greeting {\n  color: blue;\n  font-size: 24px;\n}`,
-    color: 'bg-purple-500'
+    color: 'bg-secondary-600'
   }
 ];
 

@@ -1,9 +1,8 @@
 import { useContext, useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { ThemeContext } from '../context/ThemeContext';
 import DarkModeToggle from './DarkModeToggle';
-import CodeGharLogo from './CodeGharLogo';
+import KodeshareIcon from './KodeshareIcon';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -40,13 +39,13 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-[#03A791] dark:bg-[#03A791]/90 text-white shadow-lg transition-colors duration-200">
+    <nav className="bg-primary-700 dark:bg-primary-700/90 text-white shadow-lg transition-colors duration-200">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold flex items-center">
-            <CodeGharLogo className="h-8 w-8 mr-2" />
-            Coder Ghar
+            <KodeshareIcon className="h-8 w-8 mr-2" />
+           Kodeshare
           </Link>
 
           {/* Desktop Navigation */}
@@ -60,14 +59,14 @@ const Navbar = () => {
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={toggleUserMenu}
-                    className="flex items-center space-x-2 hover:bg-[#81E7AF]/20 p-2 rounded-lg transition-colors duration-200"
+                    className="flex items-center space-x-2 hover:bg-secondary-700/20 p-2 rounded-lg transition-colors duration-200"
                   >
-                    <div className="bg-[#F1BA88] rounded-full w-8 h-8 flex items-center justify-center">
+                    <div className="bg-accent-700 rounded-full w-8 h-8 flex items-center justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                       </svg>
                     </div>
-                    <span className="text-[#E9F5BE]">{user?.username}</span>
+                    <span className="text-neutral-700">{user?.username}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
@@ -75,14 +74,14 @@ const Navbar = () => {
 
                   {/* User dropdown menu */}
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#03A791]/80 rounded-lg shadow-lg py-1 z-10 border border-[#81E7AF]/20">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-primary-700/80 rounded-lg shadow-lg py-1 z-10 border border-secondary-700/20">
                       <Link
                         to="/profile"
-                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-[#E9F5BE]/20 dark:hover:bg-[#81E7AF]/20"
+                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#03A791] dark:text-[#81E7AF]" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700 dark:text-secondary-700" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                           </svg>
                           Profile
@@ -90,26 +89,26 @@ const Navbar = () => {
                       </Link>
                       <Link
                         to="/dashboard"
-                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-[#E9F5BE]/20 dark:hover:bg-[#81E7AF]/20"
+                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#03A791] dark:text-[#81E7AF]" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700 dark:text-secondary-700" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
                           </svg>
                           Dashboard
                         </div>
                       </Link>
-                      <div className="border-t border-[#81E7AF]/20 dark:border-[#81E7AF]/30 my-1"></div>
+                      <div className="border-t border-secondary-700/20 dark:border-secondary-700/30 my-1"></div>
                       <button
                         onClick={() => {
                           handleLogout();
                           setUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-[#E9F5BE]/20 dark:hover:bg-[#81E7AF]/20"
+                        className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
                       >
                         <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#F1BA88] dark:text-[#F1BA88]" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-accent-700 dark:text-accent-700" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm7 5a1 1 0 10-2 0v4.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 12.586V8z" clipRule="evenodd" />
                           </svg>
                           Logout
@@ -121,12 +120,12 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/login" className="hover:text-[#E9F5BE] transition-colors duration-200 font-medium">
+                <Link to="/login" className="hover:text-neutral-700 transition-colors duration-200 font-medium">
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-[#F1BA88] hover:bg-[#F1BA88]/80 text-[#03A791] px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  className="bg-accent-700 hover:bg-accent-700/80 text-primary-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200"
                 >
                   Register
                 </Link>
@@ -141,7 +140,7 @@ const Navbar = () => {
             <DarkModeToggle />
             <button
               onClick={toggleMobileMenu}
-              className="text-white hover:text-[#E9F5BE] focus:outline-none transition-colors duration-200"
+              className="text-white hover:text-neutral-700 focus:outline-none transition-colors duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
@@ -156,11 +155,11 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-[#81E7AF]/30 dark:border-[#81E7AF]/30">
+          <div className="md:hidden mt-4 pt-4 border-t border-secondary-700/30 dark:border-secondary-700/30">
             <div className="flex flex-col space-y-4">
               <Link
                 to="/"
-                className="hover:text-[#E9F5BE] transition-colors duration-200 font-medium"
+                className="hover:text-neutral-700 transition-colors duration-200 font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
@@ -170,27 +169,27 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/dashboard"
-                    className="hover:text-[#E9F5BE] transition-colors duration-200 font-medium"
+                    className="hover:text-neutral-700 transition-colors duration-200 font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <div className="flex flex-col space-y-2">
                     <div className="flex items-center space-x-2 mb-2">
-                      <div className="bg-[#F1BA88] rounded-full w-8 h-8 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#03A791]" viewBox="0 0 20 20" fill="currentColor">
+                      <div className="bg-accent-700 rounded-full w-8 h-8 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-700" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                         </svg>
                       </div>
-                      <span className="text-[#E9F5BE]">{user?.username}</span>
+                      <span className="text-neutral-700">{user?.username}</span>
                     </div>
 
                     <Link
                       to="/profile"
-                      className="bg-[#81E7AF]/20 hover:bg-[#81E7AF]/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
+                      className="bg-secondary-700/20 hover:bg-secondary-700/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#03A791]" viewBox="0 0 20 20" fill="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                       </svg>
                       Profile
@@ -201,9 +200,9 @@ const Navbar = () => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="bg-[#F1BA88]/20 hover:bg-[#F1BA88]/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
+                      className="bg-accent-700/20 hover:bg-accent-700/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#F1BA88]" viewBox="0 0 20 20" fill="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-accent-700" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm7 5a1 1 0 10-2 0v4.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 12.586V8z" clipRule="evenodd" />
                       </svg>
                       Logout
@@ -214,14 +213,14 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/login"
-                    className="hover:text-[#E9F5BE] transition-colors duration-200 font-medium"
+                    className="hover:text-neutral-700 transition-colors duration-200 font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-[#F1BA88] hover:bg-[#F1BA88]/80 text-[#03A791] px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                    className="bg-accent-700 hover:bg-accent-700/80 text-primary-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Register

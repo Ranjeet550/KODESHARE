@@ -171,7 +171,7 @@ const Home = () => {
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#E9F5BE]/50 dark:bg-[#81E7AF]/20 rounded-full blur-3xl opacity-70"></div>
           <span className="inline-block text-[#03A791] dark:text-[#81E7AF] font-semibold mb-3">POWERFUL FEATURES</span>
           <h2 className="text-5xl font-bold text-gray-800 dark:text-white relative z-10">
-            Why Choose <span className="text-[#03A791] dark:text-[#81E7AF]">Code Ghar</span>?
+            Why Choose <span className="text-[#03A791] dark:text-[#81E7AF]">Kodeshare</span>?
           </h2>
           <div className="w-24 h-1 bg-gradient-to-r from-[#03A791] to-[#F1BA88] mx-auto mt-6 rounded-full"></div>
         </div>
