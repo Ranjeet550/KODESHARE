@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../utils/apiClient';
+import { getApiUrl } from '../config/apiConfig';
 
 // Create context
 export const AuthContext = createContext();
@@ -21,18 +22,14 @@ export const AuthProvider = ({ children }) => {
           return;
         }
 
-        // Set auth token header
-        axios.defaults.headers.common['x-auth-token'] = token;
-
         // Get user data
-        const res = await axios.get('/auth/me');
+        const res = await apiClient.get(getApiUrl('/auth/me'));
 
         setUser(res.data);
         setIsAuthenticated(true);
         setLoading(false);
       } catch (err) {
         localStorage.removeItem('token');
-        delete axios.defaults.headers.common['x-auth-token'];
         setUser(null);
         setIsAuthenticated(false);
         setLoading(false);
@@ -46,13 +43,10 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       setError(null);
-      const res = await axios.post('/auth/register', formData);
+      const res = await apiClient.post(getApiUrl('/auth/register'), formData);
 
       // Save token to localStorage
       localStorage.setItem('token', res.data.token);
-
-      // Set auth token header
-      axios.defaults.headers.common['x-auth-token'] = res.data.token;
 
       setUser(res.data.user);
       setIsAuthenticated(true);
@@ -68,13 +62,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (formData) => {
     try {
       setError(null);
-      const res = await axios.post('/auth/login', formData);
+      const res = await apiClient.post(getApiUrl('/auth/login'), formData);
 
       // Save token to localStorage
       localStorage.setItem('token', res.data.token);
-
-      // Set auth token header
-      axios.defaults.headers.common['x-auth-token'] = res.data.token;
 
       setUser(res.data.user);
       setIsAuthenticated(true);
@@ -91,9 +82,6 @@ export const AuthProvider = ({ children }) => {
     // Remove token from localStorage
     localStorage.removeItem('token');
 
-    // Remove auth header
-    delete axios.defaults.headers.common['x-auth-token'];
-
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -102,7 +90,7 @@ export const AuthProvider = ({ children }) => {
   const forgotPassword = async (email) => {
     try {
       setError(null);
-      const res = await axios.post('/auth/forgot-password', { email });
+      const res = await apiClient.post(getApiUrl('/auth/forgot-password'), { email });
       return res.data;
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send reset email');
@@ -114,7 +102,7 @@ export const AuthProvider = ({ children }) => {
   const verifyOTP = async (email, otp) => {
     try {
       setError(null);
-      const res = await axios.post('/auth/verify-otp', { email, otp });
+      const res = await apiClient.post(getApiUrl('/auth/verify-otp'), { email, otp });
       return res.data;
     } catch (err) {
       setError(err.response?.data?.message || 'OTP verification failed');
@@ -126,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (resetToken, newPassword) => {
     try {
       setError(null);
-      const res = await axios.post('/auth/reset-password', { resetToken, newPassword });
+      const res = await apiClient.post(getApiUrl('/auth/reset-password'), { resetToken, newPassword });
       return res.data;
     } catch (err) {
       setError(err.response?.data?.message || 'Password reset failed');

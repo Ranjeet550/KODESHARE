@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL } from './config/apiConfig';
 import './App.css';
 
 // Components
@@ -21,9 +22,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Set base URL for API requests
-// Use relative URLs in development (Vite proxy will handle routing)
-// In production, this should be set to your actual API URL
-axios.defaults.baseURL = import.meta.env.DEV ? '/api' : 'http://localhost:5001/api';
+// Uses the VITE_API_URL environment variable
+axios.defaults.baseURL = API_BASE_URL;
 
 function App() {
   return (

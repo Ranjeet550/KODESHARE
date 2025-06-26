@@ -37,7 +37,8 @@ const CodeEditor = () => {
   // Connect to socket and fetch code share
   useEffect(() => {
     // Connect to socket.io server
-    socketRef.current = io('http://localhost:5001');
+    const socketUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+    socketRef.current = io(socketUrl);
 
     // Join the room for this code share
     socketRef.current.emit('join-room', id);

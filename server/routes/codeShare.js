@@ -16,9 +16,20 @@ const authenticateUser = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('JWT decoded:', decoded);
+    
+    // Ensure the userId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(decoded.userId)) {
+      console.error('Invalid user ID in token:', decoded.userId);
+      req.user = null;
+      return next();
+    }
+    
     req.user = { id: decoded.userId };
+    console.log('Authenticated user:', req.user);
     next();
   } catch (error) {
+    console.error('Authentication error:', error);
     // If token is invalid, continue as anonymous
     req.user = null;
     next();
@@ -28,6 +39,9 @@ const authenticateUser = async (req, res, next) => {
 // Create a new code share
 router.post('/', authenticateUser, async (req, res) => {
   try {
+    console.log('Creating code share - Request body:', req.body);
+    console.log('Creating code share - User:', req.user);
+    
     const { title, code, language, isPublic, expiresIn, customId } = req.body;
 
     // Calculate expiration date
@@ -35,6 +49,7 @@ router.post('/', authenticateUser, async (req, res) => {
 
     // For logged-in users, don't set expiration unless explicitly requested
     if (req.user) {
+      console.log('Logged-in user creating code share');
       // Only set expiration if explicitly requested by the user
       if (expiresIn) {
         expiresAt = new Date();
@@ -42,6 +57,7 @@ router.post('/', authenticateUser, async (req, res) => {
       }
       // Otherwise, no expiration (null)
     } else {
+      console.log('Anonymous user creating code share');
       // For anonymous users, always set 24-hour expiration
       expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + (expiresIn ? parseInt(expiresIn) : 24));
@@ -49,23 +65,55 @@ router.post('/', authenticateUser, async (req, res) => {
 
     // Check if custom ID is provided and not already in use
     if (customId) {
+      console.log('Checking custom ID:', customId);
       const existingCodeShare = await CodeShare.findOne({ customId });
       if (existingCodeShare) {
         return res.status(400).json({ message: 'This custom ID is already in use' });
       }
     }
 
-    const newCodeShare = new CodeShare({
+    // Ensure owner is a valid ObjectId or null
+    let ownerId = null;
+    if (req.user && req.user.id) {
+      if (mongoose.Types.ObjectId.isValid(req.user.id)) {
+        ownerId = new mongoose.Types.ObjectId(req.user.id);
+      } else {
+        console.error('Invalid owner ID:', req.user.id);
+        return res.status(400).json({ message: 'Invalid user authentication' });
+      }
+    }
+
+    const codeShareData = {
       title: title || 'Untitled Code',
       code: code || '',
       language: language || 'javascript',
-      owner: req.user ? req.user.id : null,
+      owner: ownerId,
       isPublic: isPublic !== undefined ? isPublic : true,
-      expiresAt: expiresAt,
-      customId: customId || null
-    });
+      expiresAt: expiresAt
+    };
+
+    // Only add customId if it's provided (don't set null)
+    if (customId) {
+      codeShareData.customId = customId;
+    }
+
+    console.log('Creating code share with data:', codeShareData);
+
+    const newCodeShare = new CodeShare(codeShareData);
+    console.log('Code share instance created:', newCodeShare);
+
+    // Validate the document before saving
+    const validationError = newCodeShare.validateSync();
+    if (validationError) {
+      console.error('Validation error:', validationError);
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        details: validationError.message 
+      });
+    }
 
     await newCodeShare.save();
+    console.log('Code share saved successfully:', newCodeShare._id);
 
     res.status(201).json({
       message: 'Code share created successfully',
@@ -79,7 +127,30 @@ router.post('/', authenticateUser, async (req, res) => {
     });
   } catch (error) {
     console.error('Create code share error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error stack:', error.stack);
+    
+    // Return more specific error messages
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        details: error.message 
+      });
+    }
+    
+    if (error.code === 11000) {
+      console.error('Duplicate key error details:', error);
+      const field = Object.keys(error.keyPattern || {})[0] || 'unknown';
+      return res.status(400).json({ 
+        message: 'Duplicate key error', 
+        details: `Duplicate value for field: ${field}`,
+        field: field
+      });
+    }
+    
+    res.status(500).json({ 
+      message: 'Server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+    });
   }
 });
 

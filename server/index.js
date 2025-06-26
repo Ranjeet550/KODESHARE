@@ -27,7 +27,35 @@ const io = new Server(server, {
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
+  .then(async () => {
+    console.log('Connected to MongoDB');
+    
+    // Fix the customId index issue
+    try {
+      console.log('Checking and fixing customId index...');
+      const collection = mongoose.connection.db.collection('codeshares');
+      
+      // Try to drop the old index if it exists
+      try {
+        await collection.dropIndex('customId_1');
+        console.log('Dropped old customId index');
+      } catch (err) {
+        console.log('Old customId index not found or already dropped');
+      }
+      
+      // Create the new index with partial filter (don't use sparse with partialFilterExpression)
+      await collection.createIndex(
+        { customId: 1 }, 
+        { 
+          unique: true,
+          partialFilterExpression: { customId: { $exists: true, $ne: null } }
+        }
+      );
+      console.log('Created new customId index with partial filter');
+    } catch (err) {
+      console.error('Index management error:', err);
+    }
+  })
   .catch((err) => console.error('MongoDB connection error:', err));
 
 // Import routes

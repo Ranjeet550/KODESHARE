@@ -18,7 +18,13 @@ const codeShareSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false // Allow anonymous code shares
+    required: false, // Allow anonymous code shares
+    validate: {
+      validator: function(v) {
+        return v === null || v === undefined || mongoose.Types.ObjectId.isValid(v);
+      },
+      message: 'Invalid owner ID'
+    }
   },
   isPublic: {
     type: Boolean,
@@ -47,9 +53,10 @@ const codeShareSchema = new mongoose.Schema({
   customId: {
     type: String,
     trim: true,
+    sparse: true, // Allow multiple documents without customId
     validate: {
       validator: function(v) {
-        return v === null || v === undefined || /^[a-zA-Z0-9_-]{1,50}$/.test(v);
+        return !v || /^[a-zA-Z0-9_-]{1,50}$/.test(v);
       },
       message: props => `${props.value} is not a valid custom ID. Use only letters, numbers, underscores, and hyphens.`
     }
@@ -58,8 +65,9 @@ const codeShareSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create index for customId
-codeShareSchema.index({ customId: 1 }, { unique: true, sparse: true });
+// Create index for customId - only for documents that have customId
+// Note: We handle uniqueness in application logic to avoid null conflicts
+codeShareSchema.index({ customId: 1 }, { sparse: true });
 
 // Create a unique URL-friendly ID
 codeShareSchema.pre('save', function(next) {
