@@ -5,6 +5,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const http = require('http');
 const { Server } = require('socket.io');
+const helmet = require('helmet');
+const compression = require('compression');
 
 // Load environment variables
 dotenv.config();
@@ -16,6 +18,8 @@ const server = http.createServer(app);
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(helmet());
+app.use(compression());
 
 // Socket.io setup
 const io = new Server(server, {
