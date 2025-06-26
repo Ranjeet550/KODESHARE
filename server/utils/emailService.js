@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 const sendEmail = async (to, subject, html) => {
   try {
     const mailOptions = {
-      from: `"Codeghar" <${process.env.EMAIL_USER}>`,
+      from: `"KODESHARE" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html
@@ -44,11 +44,11 @@ const sendEmail = async (to, subject, html) => {
  * @returns {Promise} - Email send promise
  */
 const sendOTPEmail = async (to, otp, username) => {
-  const subject = 'Password Reset OTP - Codeghar';
+  const subject = 'Password Reset OTP - KODESHARE';
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
       <div style="text-align: center; margin-bottom: 20px;">
-        <h1 style="color: #64dd17;">Codeghar</h1>
+        <h1 style="color: #64dd17;">KODESHARE</h1>
       </div>
       <div style="padding: 20px; background-color: #f9f9f9; border-radius: 5px;">
         <h2 style="margin-top: 0; color: #333;">Password Reset</h2>
@@ -58,7 +58,7 @@ const sendOTPEmail = async (to, otp, username) => {
           <div style="font-size: 24px; font-weight: bold; letter-spacing: 5px; padding: 15px; background-color: #ccff90; border-radius: 5px; display: inline-block;">${otp}</div>
         </div>
         <p>This OTP is valid for 15 minutes. If you didn't request a password reset, please ignore this email.</p>
-        <p>Thank you,<br>The Codeghar Team</p>
+        <p>Thank you,<br>The KODESHARE Team</p>
       </div>
       <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #888;">
         <p>This is an automated email. Please do not reply.</p>

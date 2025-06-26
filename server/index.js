@@ -115,7 +115,7 @@ io.on('connection', (socket) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000; // Changed to 5001 to avoid conflict
+const PORT = process.env.PORT || 5001; // Changed to 5001 to avoid conflict
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -39,110 +39,127 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="bg-primary-700 dark:bg-primary-700/90 text-white shadow-lg transition-colors duration-200">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/20 dark:border-gray-700/20 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="text-2xl font-bold flex items-center">
-            <KodeshareIcon className="h-8 w-8 mr-2" />
-           Kodeshare
+          <Link to="/" className="flex items-center space-x-2 group">
+            <div className="relative">
+              <KodeshareIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-transform duration-200 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Kodeshare
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="hover:text-[#E9F5BE] transition-colors duration-200 font-medium">
+          <div className="hidden md:flex items-center space-x-1">
+            <Link 
+              to="/" 
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+            >
               Home
             </Link>
 
             {isAuthenticated ? (
-              <>
+              <div className="flex items-center space-x-2 ml-4">
+                <Link 
+                  to="/dashboard" 
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+                >
+                  Dashboard
+                </Link>
+
+                {/* User Menu */}
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={toggleUserMenu}
-                    className="flex items-center space-x-2 hover:bg-secondary-700/20 p-2 rounded-lg transition-colors duration-200"
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 group"
                   >
-                    <div className="bg-accent-700 rounded-full w-8 h-8 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                      </svg>
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium shadow-md">
+                      {user?.username?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-neutral-700">{user?.username}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium hidden lg:block">
+                      {user?.username}
+                    </span>
+                    <svg 
+                      className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
-                  {/* User dropdown menu */}
+                  {/* Dropdown Menu */}
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-primary-700/80 rounded-lg shadow-lg py-1 z-10 border border-secondary-700/20">
+                    <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Signed in as</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                          {user?.username}
+                        </p>
+                      </div>
+                      
                       <Link
                         to="/profile"
-                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700 dark:text-secondary-700" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                          </svg>
-                          Profile
-                        </div>
+                        <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Profile
                       </Link>
-                      <Link
-                        to="/dashboard"
-                        className="block px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700 dark:text-secondary-700" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-                          </svg>
-                          Dashboard
-                        </div>
-                      </Link>
-                      <div className="border-t border-secondary-700/20 dark:border-secondary-700/30 my-1"></div>
+                      
                       <button
                         onClick={() => {
                           handleLogout();
                           setUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-gray-800 dark:text-white hover:bg-neutral-700/20 dark:hover:bg-secondary-700/20"
+                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
                       >
-                        <div className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-accent-700 dark:text-accent-700" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm7 5a1 1 0 10-2 0v4.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 12.586V8z" clipRule="evenodd" />
-                          </svg>
-                          Logout
-                        </div>
+                        <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        Sign out
                       </button>
                     </div>
                   )}
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <Link to="/login" className="hover:text-neutral-700 transition-colors duration-200 font-medium">
-                  Login
+              <div className="flex items-center space-x-2 ml-4">
+                <Link 
+                  to="/login" 
+                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+                >
+                  Sign in
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-accent-700 hover:bg-accent-700/80 text-primary-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200"
+                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                 >
-                  Register
+                  Get Started
                 </Link>
-              </>
+              </div>
             )}
 
-            <DarkModeToggle />
+            <div className="ml-4 pl-4 border-l border-gray-200 dark:border-gray-700">
+              <DarkModeToggle />
+            </div>
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-4">
+          <div className="md:hidden flex items-center space-x-3">
             <DarkModeToggle />
             <button
               onClick={toggleMobileMenu}
-              className="text-white hover:text-neutral-700 focus:outline-none transition-colors duration-200"
+              className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {mobileMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -155,11 +172,11 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 pt-4 border-t border-secondary-700/30 dark:border-secondary-700/30">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md">
+            <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 to="/"
-                className="hover:text-neutral-700 transition-colors duration-200 font-medium"
+                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Home
@@ -169,28 +186,34 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/dashboard"
-                    className="hover:text-neutral-700 transition-colors duration-200 font-medium"
+                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
-                  <div className="flex flex-col space-y-2">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className="bg-accent-700 rounded-full w-8 h-8 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary-700" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
+
+                  <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700 mt-2 pt-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-medium">
+                        {user?.username?.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-neutral-700">{user?.username}</span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">
+                          {user?.username}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Signed in
+                        </p>
+                      </div>
                     </div>
 
                     <Link
                       to="/profile"
-                      className="bg-secondary-700/20 hover:bg-secondary-700/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
+                      className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 mb-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary-700" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       Profile
                     </Link>
@@ -200,32 +223,32 @@ const Navbar = () => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="bg-accent-700/20 hover:bg-accent-700/30 px-4 py-2 rounded-lg font-medium transition-colors duration-200 w-full text-left flex items-center"
+                      className="flex items-center w-full px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-accent-700" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414l-5-5H3zm7 5a1 1 0 10-2 0v4.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 12.586V8z" clipRule="evenodd" />
+                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
-                      Logout
+                      Sign out
                     </button>
                   </div>
                 </>
               ) : (
-                <>
+                <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700 mt-2 pt-4 space-y-2">
                   <Link
                     to="/login"
-                    className="hover:text-neutral-700 transition-colors duration-200 font-medium"
+                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Login
+                    Sign in
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-accent-700 hover:bg-accent-700/80 text-primary-700 px-4 py-2 rounded-lg font-medium transition-colors duration-200 text-center"
+                    className="block px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium transition-all duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Register
+                    Get Started
                   </Link>
-                </>
+                </div>
               )}
             </div>
           </div>

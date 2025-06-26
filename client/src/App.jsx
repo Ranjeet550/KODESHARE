@@ -21,7 +21,9 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
 // Set base URL for API requests
-axios.defaults.baseURL = 'http://localhost:5000/api';
+// Use relative URLs in development (Vite proxy will handle routing)
+// In production, this should be set to your actual API URL
+axios.defaults.baseURL = import.meta.env.DEV ? '/api' : 'http://localhost:5001/api';
 
 function App() {
   return (

@@ -49,7 +49,8 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-dark-700 rounded-lg shadow-md">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-dark-700 border border-gray-300 dark:border-dark-500 rounded-lg shadow-md">
+
       <h1 className="text-2xl font-bold text-center mb-6 text-gray-800 dark:text-gray-100">
         Forgot Password
       </h1>
