@@ -26,10 +26,10 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  - type: static
+  - type: web
     name: codeshare-frontend
-    env: static
+    env: node
     plan: free
     root: client
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    startCommand: npm start

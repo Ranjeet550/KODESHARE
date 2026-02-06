@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_BASE_URL } from './config/apiConfig';
 import './App.css';
@@ -51,8 +51,8 @@ function App() {
                     <UserProfile />
                   </PrivateRoute>
                 } />
-                {/* Custom slug route - will be handled by Home component */}
-                <Route path="/:slug" element={<Home />} />
+                {/* Custom slug route - redirect to /code/:slug */}
+                <Route path="/:slug" element={<CustomSlugRedirect />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
@@ -72,6 +72,23 @@ const PrivateRoute = ({ children }) => {
   }
 
   return children;
+};
+
+// Custom slug redirect component
+const CustomSlugRedirect = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Validate slug format (alphanumeric, underscore, hyphen, 1-50 chars)
+    if (slug && /^[a-zA-Z0-9_-]{1,50}$/.test(slug)) {
+      navigate(`/code/${slug}`, { replace: true });
+    } else {
+      navigate('/', { replace: true });
+    }
+  }, [slug, navigate]);
+
+  return null;
 };
 
 export default App;
