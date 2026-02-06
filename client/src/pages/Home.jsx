@@ -43,9 +43,14 @@ const Home = () => {
       !path.startsWith("/code/") &&
       !path.startsWith("/login") &&
       !path.startsWith("/register") &&
-      !path.startsWith("/dashboard")
+      !path.startsWith("/dashboard") &&
+      !path.startsWith("/profile") &&
+      !path.startsWith("/forgot-password") &&
+      !path.startsWith("/verify-otp") &&
+      !path.startsWith("/reset-password")
     ) {
       const customSlug = path.substring(1);
+      // Allow 1-50 character slugs for custom code share URLs
       if (customSlug && /^[a-zA-Z0-9_-]{1,50}$/.test(customSlug)) {
         navigate(`/code/${customSlug}`);
       }
@@ -178,10 +183,10 @@ const Home = () => {
       setError(null);
 
       if (customId.trim()) {
-        const customIdRegex = /^[a-zA-Z0-9_-]{1,50}$/;
+        const customIdRegex = /^[a-zA-Z0-9_-]{2,50}$/;
         if (!customIdRegex.test(customId.trim())) {
           setError(
-            "Custom ID can only contain letters, numbers, underscores, and hyphens (max 50 characters)",
+            "Custom ID must be 2-50 characters (letters, numbers, underscores, hyphens)",
           );
           setLoading(false);
           return;
