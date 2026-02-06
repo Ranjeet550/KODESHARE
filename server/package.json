@@ -6,9 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "start:prod": "set NODE_ENV=production&& node index.js",
-    "build": "babel . --out-dir dist --ignore node_modules,dist",
-    "start:babel": "set NODE_ENV=production&& node dist/index.js"
+    "build": "echo \"Build complete\"",
+    "start:prod": "NODE_ENV=production node index.js"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +15,11 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "compression": "^1.7.4",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
     "nodemailer": "^7.0.2",

@@ -3,8 +3,18 @@
 @tailwind utilities;
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+/* 3D Perspective for rotating text */
+.perspective {
+    perspective: 1000px;
+}
+
+.rotate-text-item {
+    display: inline-block;
+    transform-style: preserve-3d;
+    backface-visibility: visible;
+}

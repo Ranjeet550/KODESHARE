@@ -16,7 +16,12 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 app.use(helmet());
 app.use(compression());
@@ -24,8 +29,9 @@ app.use(compression());
 // Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.FRONTEND_URL || '*',
     methods: ['GET', 'POST'],
+    credentials: true
   },
 });
 
@@ -49,10 +55,10 @@ mongoose.connect(process.env.MONGODB_URI)
       
       // Create the new index with partial filter (don't use sparse with partialFilterExpression)
       await collection.createIndex(
-        { customId: 1 }, 
-        { 
+        { customId: 1 },
+        {
           unique: true,
-          partialFilterExpression: { customId: { $exists: true, $ne: null } }
+          partialFilterExpression: { customId: { $exists: true } }
         }
       );
       console.log('Created new customId index with partial filter');
@@ -147,7 +153,7 @@ io.on('connection', (socket) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5001; // Changed to 5001 to avoid conflict
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
 });
