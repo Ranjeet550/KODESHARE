@@ -14,6 +14,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [customId, setCustomId] = useState("");
+  const [joinId, setJoinId] = useState("");
   const [email, setEmail] = useState("");
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeFaq, setActiveFaq] = useState(null);
@@ -186,7 +187,9 @@ const Home = () => {
           });
           navigate(`/code/${customId.trim()}`);
         } catch (err) {
-          navigate(`/code/${customId.trim()}`);
+          setError(err.message || "Failed to create code share with this ID. It may already be in use.");
+          setLoading(false);
+          return;
         }
         return;
       }
@@ -204,6 +207,13 @@ const Home = () => {
       setError(err.message || "Failed to create new code share");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleJoinCodeShare = () => {
+    if (joinId.trim()) {
+      navigate(`/code/${joinId.trim()}`);
+      setJoinId("");
     }
   };
 
@@ -251,7 +261,7 @@ const Home = () => {
   const pricingPlans = [
     {
       name: "Free",
-      price: "$0",
+      price: "₹0",
       period: "forever",
       description: "Perfect for individual developers and small projects",
       features: [
@@ -266,7 +276,7 @@ const Home = () => {
     },
     {
       name: "Pro",
-      price: "$9",
+      price: "₹199",
       period: "per month",
       description: "Ideal for professional developers and small teams",
       features: [
@@ -282,7 +292,7 @@ const Home = () => {
     },
     {
       name: "Team",
-      price: "$29",
+      price: "₹299",
       period: "per month",
       description: "Built for teams and organizations",
       features: [
@@ -534,11 +544,11 @@ const Home = () => {
           <div className="max-w-lg mx-auto mb-16">
             <div className="flex items-center bg-white/80 dark:bg-dark-700/80 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-dark-600/50 p-3 backdrop-blur-sm">
               <span className="px-4 text-gray-500 dark:text-gray-400 text-sm font-medium">
-                kodeshare.dev/
+                kodeshare  |
               </span>
               <input
                 type="text"
-                placeholder="your-custom-workspace"
+                placeholder="your-custom-kodeshare"
                 value={customId}
                 onChange={(e) => setCustomId(e.target.value)}
                 className="flex-1 px-3 py-3 bg-transparent text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
@@ -546,9 +556,15 @@ const Home = () => {
               <button
                 onClick={handleCreateNewCodeShare}
                 disabled={loading || !customId.trim()}
-                className="px-6 py-3 bg-gradient-to-r from-[#03A791] to-[#81E7AF] text-white rounded-xl font-bold hover:from-[#028a73] hover:to-[#6dd19c] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="px-6 py-3 bg-gradient-to-r from-[#03A791] to-[#81E7AF] text-white rounded-xl font-bold hover:from-[#028a73] hover:to-[#6dd19c] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
               >
-                Create
+                {loading && (
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                )}
+                {loading ? "Creating..." : "Create"}
               </button>
             </div>
 
@@ -557,8 +573,51 @@ const Home = () => {
             )}
           </div>
 
+          {/* Join Code Share Section */}
+          <div className="max-w-lg mx-auto mb-16">
+            <div className="text-center mb-4">
+              <p className="text-gray-700 dark:text-green-700 text-sm font-medium">
+                Already have a kode share ID?
+              </p>
+            </div>
+            <div className="flex items-center bg-white/80 dark:bg-dark-700/80 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-dark-600/50 p-3 backdrop-blur-sm">
+              <span className="px-4 text-gray-500 dark:text-gray-400 text-sm font-medium">
+                kodeshare  |
+              </span>
+              <input
+                type="text"
+                placeholder="enter-kodeshare-id"
+                value={joinId}
+                onChange={(e) => setJoinId(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleJoinCodeShare()}
+                className="flex-1 px-3 py-3 bg-transparent text-gray-800 dark:text-white placeholder-gray-400 focus:outline-none font-medium"
+              />
+              <button
+                onClick={handleJoinCodeShare}
+                disabled={!joinId.trim()}
+                className="px-6 py-3 bg-gradient-to-r from-[#81E7AF] to-[#03A791] text-white rounded-xl font-bold hover:from-[#6dd19c] hover:to-[#028a73] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Join
+              </button>
+            </div>
+          </div>
+
           {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-8 opacity-70">
+          {/* <div className="flex flex-wrap items-center justify-center gap-8 opacity-70">
             <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
               Trusted by teams at
             </span>
@@ -574,7 +633,7 @@ const Home = () => {
                 ),
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Floating Elements */}

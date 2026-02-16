@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import DarkModeToggle from './DarkModeToggle';
 import KodeshareIcon from './KodeshareIcon';
+import { Home, LayoutDashboard, ChevronDown, User, LogOut, Menu, X } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
@@ -45,10 +46,10 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <div className="relative">
-              <KodeshareIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 transition-transform duration-200 group-hover:scale-110" />
+              <KodeshareIcon className="h-8 w-8 text-green-600 dark:text-blue-400 transition-transform duration-200 group-hover:scale-110" />
               <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
               Kodeshare
             </span>
           </Link>
@@ -57,18 +58,22 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-1">
             <Link 
               to="/" 
-              className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+              className="flex items-center space-x-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+              title="Home"
             >
-              Home
+              <Home size={20} />
+              <span>Home</span>
             </Link>
 
             {isAuthenticated ? (
               <div className="flex items-center space-x-2 ml-4">
                 <Link 
                   to="/dashboard" 
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+                  className="flex items-center space-x-2 px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 font-medium"
+                  title="Dashboard"
                 >
-                  Dashboard
+                  <LayoutDashboard size={20} />
+                  <span>Dashboard</span>
                 </Link>
 
                 {/* User Menu */}
@@ -83,14 +88,10 @@ const Navbar = () => {
                     <span className="text-gray-700 dark:text-gray-300 font-medium hidden lg:block">
                       {user?.username}
                     </span>
-                    <svg 
-                      className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} 
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <ChevronDown 
+                      size={16}
+                      className={`text-gray-500 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
+                    />
                   </button>
 
                   {/* Dropdown Menu */}
@@ -108,9 +109,7 @@ const Navbar = () => {
                         className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                         onClick={() => setUserMenuOpen(false)}
                       >
-                        <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                        <User size={16} className="mr-3 text-gray-400" />
                         Profile
                       </Link>
                       
@@ -121,9 +120,7 @@ const Navbar = () => {
                         }}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
                       >
-                        <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
+                        <LogOut size={16} className="mr-3" />
                         Sign out
                       </button>
                     </div>
@@ -140,7 +137,7 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
+                  className="px-4 py-2 bg-gradient-to-r from-green-400 to-black-600 hover:from-green-700 hover:to-green-600 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                 >
                   Get Started
                 </Link>
@@ -159,13 +156,11 @@ const Navbar = () => {
               onClick={toggleMobileMenu}
               className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              {mobileMenuOpen ? (
+                <X size={24} />
+              ) : (
+                <Menu size={24} />
+              )}
             </button>
           </div>
         </div>
@@ -176,20 +171,22 @@ const Navbar = () => {
             <div className="px-2 pt-2 pb-3 space-y-1">
               <Link
                 to="/"
-                className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Home
+                <Home size={20} />
+                <span>Home</span>
               </Link>
 
               {isAuthenticated ? (
                 <>
                   <Link
                     to="/dashboard"
-                    className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
+                    className="flex items-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Dashboard
+                    <LayoutDashboard size={20} />
+                    <span>Dashboard</span>
                   </Link>
 
                   <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700 mt-2 pt-4">
@@ -209,13 +206,11 @@ const Navbar = () => {
 
                     <Link
                       to="/profile"
-                      className="flex items-center px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 mb-2"
+                      className="flex items-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 mb-2"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <svg className="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      Profile
+                      <User size={16} />
+                      <span>Profile</span>
                     </Link>
 
                     <button
@@ -223,12 +218,10 @@ const Navbar = () => {
                         handleLogout();
                         setMobileMenuOpen(false);
                       }}
-                      className="flex items-center w-full px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
+                      className="flex items-center space-x-2 w-full px-3 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200"
                     >
-                      <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Sign out
+                      <LogOut size={16} />
+                      <span>Sign out</span>
                     </button>
                   </div>
                 </>
