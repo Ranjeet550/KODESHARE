@@ -36,24 +36,34 @@ const io = new Server(server, {
 });
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
+console.log('Attempting to connect to MongoDB with URI:', process.env.MONGODB_URI?.substring(0, 50) + '...');
+
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
   .then(async () => {
-    console.log('Connected to MongoDB');
+    console.log('✓ Connected to MongoDB');
     
     // Fix the customId index issue
     try {
       console.log('Checking and fixing customId index...');
       const collection = mongoose.connection.db.collection('codeshares');
       
-      // Try to drop the old index if it exists
+      // Drop all indexes on customId field
       try {
-        await collection.dropIndex('customId_1');
-        console.log('Dropped old customId index');
+        const indexes = await collection.listIndexes().toArray();
+        for (const index of indexes) {
+          if (index.key.customId === 1 && index.name !== '_id_') {
+            await collection.dropIndex(index.name);
+            console.log(`Dropped index: ${index.name}`);
+          }
+        }
       } catch (err) {
-        console.log('Old customId index not found or already dropped');
+        console.log('No existing customId indexes to drop');
       }
       
-      // Create the new index with partial filter (don't use sparse with partialFilterExpression)
+      // Create the new index with partial filter
       await collection.createIndex(
         { customId: 1 },
         {
@@ -61,12 +71,15 @@ mongoose.connect(process.env.MONGODB_URI)
           partialFilterExpression: { customId: { $exists: true } }
         }
       );
-      console.log('Created new customId index with partial filter');
+      console.log('✓ Created new customId index with partial filter');
     } catch (err) {
-      console.error('Index management error:', err);
+      console.error('Index management error:', err.message);
     }
   })
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .catch((err) => {
+    console.error('✗ MongoDB connection error:', err.message);
+    console.error('Full error:', err);
+  });
 
 // Import routes
 const authRoutes = require('./routes/auth');

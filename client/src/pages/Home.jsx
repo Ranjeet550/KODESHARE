@@ -398,7 +398,8 @@ const Home = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center relative overflow-hidden">
+    <div className="flex flex-col items-center relative">
+      {/* outer wrapper should allow scrolling so sections aren't clipped */}
       {/* Animated Background */}
       <AnimatedBackground />
       <CanvasAnimation />

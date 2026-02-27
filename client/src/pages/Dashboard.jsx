@@ -11,9 +11,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [creating, setCreating] = useState(false);
-  const [filterType, setFilterType] = useState('all'); // 'all', 'public', 'private'
-  const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest', 'views'
-  const [viewMode, setViewMode] = useState('grid'); // 'grid', 'card'
+  const [filterType, setFilterType] = useState('all');
+  const [sortBy, setSortBy] = useState('newest');
+  const [viewMode, setViewMode] = useState('grid');
   const [stats, setStats] = useState({
     totalShares: 0,
     totalViews: 0,
@@ -25,7 +25,6 @@ const Dashboard = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
 
   const { user } = useContext(AuthContext);
-  const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   // Refs for animations
@@ -211,42 +210,45 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900/20 relative">
-      {/* Subtle background pattern for light theme */}
-      
-      
-      {/* Modern Navigation Bar */}
-      <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/25">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/30 relative overflow-hidden">
+      {/* Animated background blobs */}
+      <div className="absolute top-0 -left-40 w-80 h-80 bg-blue-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-pulse duration-7000 dark:bg-blue-600/5"></div>
+      <div className="absolute top-40 -right-40 w-80 h-80 bg-purple-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-pulse duration-7000 delay-2000 dark:bg-purple-600/5"></div>
+      <div className="absolute -bottom-40 left-1/2 w-80 h-80 bg-indigo-400/10 rounded-full mix-blend-multiply filter blur-3xl animate-pulse duration-7000 dark:bg-indigo-600/5"></div>
+
+      {/* Header Bar */}
+      <div className="sticky top-0 z-40 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/70 border-b border-slate-200/40 dark:border-slate-700/30 shadow-md dark:shadow-lg">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16 gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <div className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/25 flex-shrink-0">
                 <KodeshareIcon className="w-5 h-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-lg font-semibold text-slate-900 dark:text-white">Dashboard</h1>
-                <p className="text-xs text-slate-500 dark:text-gray-400">Welcome back, {user?.username}</p>
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white truncate">Dashboard</h1>
+                <p className="text-xs text-slate-500 dark:text-gray-400 truncate">Welcome back, {user?.username}</p>
               </div>
             </div>
             
             <button
               onClick={handleCreateNewCodeShare}
               disabled={creating}
-              className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+              className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-3 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100 text-sm sm:text-base flex-shrink-0"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center gap-2">
+              <div className="relative flex items-center gap-1 sm:gap-2">
                 {creating ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Creating...</span>
+                    <span className="hidden sm:inline">Creating...</span>
                   </>
                 ) : (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <span>New Code</span>
+                    <span className="hidden sm:inline">New Code</span>
+                    <span className="sm:hidden">New</span>
                   </>
                 )}
               </div>
@@ -255,27 +257,27 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-6 sm:space-y-8">
         {/* Modern Stats Overview */}
         {codeShares.length > 0 && (
-          <div ref={statsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div ref={statsRef} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
             {/* Total Code Shares */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-200/60 dark:hover:border-slate-600 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-gray-400">Total Codes</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-2">{stats.totalShares}</p>
-                  <div className="flex items-center mt-2">
-                    <div className="flex items-center text-emerald-600 dark:text-emerald-400 text-sm">
-                      <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+            <div className="group relative bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-200/60 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-gray-400">Total Codes</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1 sm:mt-2">{stats.totalShares}</p>
+                  <div className="flex items-center mt-1 sm:mt-2">
+                    <div className="flex items-center text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       Active
                     </div>
                   </div>
                 </div>
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-indigo-500/30 transition-all duration-300">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-indigo-500/30 transition-all duration-300 flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
                 </div>
@@ -283,22 +285,22 @@ const Dashboard = () => {
             </div>
 
             {/* Total Views */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-purple-500/10 hover:border-purple-200/60 dark:hover:border-slate-600 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-gray-400">Total Views</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-2">{stats.totalViews.toLocaleString()}</p>
-                  <div className="flex items-center mt-2">
-                    <div className="flex items-center text-purple-600 dark:text-purple-400 text-sm">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="group relative bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-purple-500/10 hover:border-purple-200/60 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-gray-400">Total Views</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1 sm:mt-2">{stats.totalViews.toLocaleString()}</p>
+                  <div className="flex items-center mt-1 sm:mt-2">
+                    <div className="flex items-center text-purple-600 dark:text-purple-400 text-xs sm:text-sm">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                       </svg>
                       Trending
                     </div>
                   </div>
                 </div>
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-all duration-300">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-all duration-300 flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
@@ -307,22 +309,22 @@ const Dashboard = () => {
             </div>
 
             {/* Public Shares */}
-            <div className="group relative bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-emerald-500/10 hover:border-emerald-200/60 dark:hover:border-slate-600 transition-all duration-300">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 dark:text-gray-400">Public</p>
-                  <p className="text-3xl font-bold text-slate-900 dark:text-white mt-2">{stats.publicShares}</p>
-                  <div className="flex items-center mt-2">
-                    <div className="flex items-center text-emerald-600 dark:text-emerald-400 text-sm">
-                      <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="group relative bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 shadow-sm border border-slate-200/60 dark:border-slate-700 hover:shadow-lg hover:shadow-emerald-500/10 hover:border-emerald-200/60 dark:hover:border-slate-600 transition-all duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-gray-400">Public</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mt-1 sm:mt-2">{stats.publicShares}</p>
+                  <div className="flex items-center mt-1 sm:mt-2">
+                    <div className="flex items-center text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                       </svg>
                       Shared
                     </div>
                   </div>
                 </div>
-                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-emerald-500/30 transition-all duration-300">
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-110 group-hover:shadow-xl group-hover:shadow-emerald-500/30 transition-all duration-300 flex-shrink-0">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
                   </svg>
                 </div>
@@ -356,53 +358,54 @@ const Dashboard = () => {
 
         {/* Modern Filters & Controls */}
         {codeShares.length > 0 && (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 mb-8 shadow-sm border border-slate-200/60 dark:border-slate-700">
-            <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
-              <div className="flex flex-col sm:flex-row gap-4 flex-1">
+          <div className="bg-white dark:bg-slate-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-6 sm:mb-8 shadow-sm border border-slate-200/60 dark:border-slate-700">
+            <div className="flex flex-col gap-3 sm:gap-4 md:gap-6">
+              {/* Dropdowns Row */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 {/* Filter Dropdown */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
-                    Filter by Type
+                <div className="flex-1 relative">
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5 sm:mb-2">
+                    Filter
                   </label>
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className="block w-full pl-4 pr-10 py-2.5 text-base border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm transition-all duration-200"
+                    className="block w-full pl-3 sm:pl-4 pr-8 sm:pr-10 py-2 sm:py-2.5 text-xs sm:text-base border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg sm:rounded-xl shadow-sm transition-all duration-200"
                   >
-                    <option value="all">All Code Shares</option>
-                    <option value="public">Public Only</option>
-                    <option value="private">Private Only</option>
+                    <option value="all">All Codes</option>
+                    <option value="public">Public</option>
+                    <option value="private">Private</option>
                   </select>
                 </div>
 
                 {/* Sort Dropdown */}
-                <div className="relative">
-                  <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-2">
-                    Sort by
+                <div className="flex-1 relative">
+                  <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5 sm:mb-2">
+                    Sort
                   </label>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="block w-full pl-4 pr-10 py-2.5 text-base border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-xl shadow-sm transition-all duration-200"
+                    className="block w-full pl-3 sm:pl-4 pr-8 sm:pr-10 py-2 sm:py-2.5 text-xs sm:text-base border border-slate-300 dark:border-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded-lg sm:rounded-xl shadow-sm transition-all duration-200"
                   >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
                     <option value="views">Most Viewed</option>
                   </select>
                 </div>
               </div>
 
               {/* View Toggle & Results Count */}
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-slate-600 dark:text-gray-400 font-medium">
-                  {getFilteredCodeShares().length} of {codeShares.length} codes
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 font-medium">
+                  {getFilteredCodeShares().length} of {codeShares.length}
                 </div>
                 
                 {/* View Mode Toggle */}
-                <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-xl p-1 border border-slate-200/50 dark:border-slate-600/50">
+                <div className="flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg sm:rounded-xl p-1 border border-slate-200/50 dark:border-slate-600/50">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`p-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                       viewMode === 'grid'
                         ? 'bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-400 shadow-sm'
                         : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200'
@@ -415,7 +418,7 @@ const Dashboard = () => {
                   </button>
                   <button
                     onClick={() => setViewMode('card')}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    className={`p-1.5 sm:px-3 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
                       viewMode === 'card'
                         ? 'bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-400 shadow-sm'
                         : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200'
@@ -434,16 +437,16 @@ const Dashboard = () => {
 
         {/* Error State */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200/80 dark:border-red-800/30 text-red-700 dark:text-red-400 p-6 rounded-2xl mb-8 shadow-sm">
-            <div className="flex items-center">
-              <div className="bg-red-100 dark:bg-red-800/30 p-2 rounded-full mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200/80 dark:border-red-800/30 text-red-700 dark:text-red-400 p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-2xl mb-6 sm:mb-8 shadow-sm">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="bg-red-100 dark:bg-red-800/30 p-2 rounded-full flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
-              <div>
-                <h3 className="font-semibold text-red-800 dark:text-red-300 mb-1">Error</h3>
-                <p>{error}</p>
+              <div className="min-w-0">
+                <h3 className="font-semibold text-red-800 dark:text-red-300 mb-1 text-sm sm:text-base">Error</h3>
+                <p className="text-xs sm:text-sm break-words">{error}</p>
               </div>
             </div>
           </div>
@@ -451,48 +454,48 @@ const Dashboard = () => {
 
         {/* Loading State */}
         {loading ? (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
-            <div className="text-center py-16 px-8">
-              <div className="relative mx-auto w-16 h-16 mb-6">
+          <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
+            <div className="text-center py-12 sm:py-16 px-4 sm:px-8">
+              <div className="relative mx-auto w-12 h-12 sm:w-16 sm:h-16 mb-4 sm:mb-6">
                 <div className="absolute inset-0 rounded-full border-4 border-slate-200 dark:border-slate-600"></div>
                 <div className="absolute inset-0 rounded-full border-4 border-t-indigo-500 border-r-purple-500 border-b-transparent border-l-transparent animate-spin"></div>
               </div>
-              <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">Loading Your Code Collection</h2>
-              <p className="text-slate-600 dark:text-gray-400">
+              <h2 className="text-lg sm:text-xl font-semibold text-slate-900 dark:text-white mb-2">Loading Your Code Collection</h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400">
                 Please wait while we fetch your code shares...
               </p>
             </div>
           </div>
         ) : codeShares.length === 0 ? (
           /* Empty State */
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
-            <div className="text-center py-16 px-8">
-              <div className="mx-auto mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-white dark:bg-slate-800 rounded-lg sm:rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700 overflow-hidden">
+            <div className="text-center py-12 sm:py-16 px-4 sm:px-8">
+              <div className="mx-auto mb-4 sm:mb-6">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-indigo-500/20 to-purple-600/20 rounded-lg sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-12 sm:w-12 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Ready to Start Coding?</h2>
-              <p className="text-slate-600 dark:text-gray-400 max-w-md mx-auto mb-8 leading-relaxed">
+              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-2 sm:mb-4">Ready to Start Coding?</h2>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-400 max-w-md mx-auto mb-6 sm:mb-8 leading-relaxed">
                 You haven't created any code shares yet. Start by creating your first snippet to organize and share your code.
               </p>
               <button
                 onClick={handleCreateNewCodeShare}
                 disabled={creating}
-                className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                className="group relative overflow-hidden bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:scale-100 text-sm sm:text-base"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center gap-2">
+                <div className="relative flex items-center justify-center gap-2">
                   {creating ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                       <span>Creating...</span>
                     </>
                   ) : (
                     <>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
                       <span>Create Your First Code</span>
@@ -504,7 +507,7 @@ const Dashboard = () => {
           </div>
         ) : (
           /* Code Shares Grid/List */
-          <div ref={contentRef} className={`${viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'} mt-8`}>
+          <div ref={contentRef} className={`${viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6' : 'space-y-2 sm:space-y-3 md:space-y-4'} mt-6 sm:mt-8`}>
             {getFilteredCodeShares().map((codeShare) => (
               <div
                 key={codeShare._id}

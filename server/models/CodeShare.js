@@ -65,10 +65,6 @@ const codeShareSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Create index for customId - only for documents that have customId
-// Note: We handle uniqueness in application logic to avoid null conflicts
-codeShareSchema.index({ customId: 1 }, { sparse: true });
-
 // Create a unique URL-friendly ID
 codeShareSchema.pre('save', function(next) {
   if (this.isNew) {

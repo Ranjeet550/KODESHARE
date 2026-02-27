@@ -30,9 +30,12 @@ function App() {
     <AuthProvider>
       <ThemeProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50 dark:bg-dark-800 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          {/* use min-h-screen instead of fixed h-screen so page can grow naturally
+                and scrolling occurs on window (needed for GSAP ScrollTrigger) */}
+          <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-dark-800 text-gray-900 dark:text-gray-100 transition-colors duration-200">
             <Navbar />
-            <main className={`${window.location.pathname === '/' ? '' : 'container mx-auto px-4 py-8 mt-14'}`}>
+            {/* main no longer needs its own overflow; the document will scroll normally */}
+            <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/code/:id" element={<CodeEditor />} />

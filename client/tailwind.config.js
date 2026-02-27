@@ -10,7 +10,7 @@ export default {
       colors: {
         primary: {
           DEFAULT: '#003092',
-          50: '#e6eeff',
+          50: '#4d1866ff',
           100: '#c0d4ff',
           200: '#9ab9ff',
           300: '#749eff',
@@ -24,7 +24,7 @@ export default {
         },
         secondary: {
           DEFAULT: '#00879E',
-          50: '#e6f7fa',
+          50: '#0d9948ff',
           100: '#c0eaf2',
           200: '#9adce9',
           300: '#74cfe1',
@@ -38,7 +38,7 @@ export default {
         },
         accent: {
           DEFAULT: '#FFAB5B',
-          50: '#fff8f0',
+          50: '#9c601cff',
           100: '#ffecd8',
           200: '#ffe0c0',
           300: '#ffd4a8',
@@ -52,7 +52,7 @@ export default {
         },
         neutral: {
           DEFAULT: '#FFF2DB',
-          50: '#fffefb',
+          50: '#281152ff',
           100: '#fffcf7',
           200: '#fffaf3',
           300: '#fff8ef',
