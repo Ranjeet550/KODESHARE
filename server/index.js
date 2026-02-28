@@ -48,8 +48,16 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 app.use(compression());
+
+// Add referrer policy header
+app.use((req, res, next) => {
+  res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
+  next();
+});
 
 // Socket.io setup
 const io = new Server(server, {

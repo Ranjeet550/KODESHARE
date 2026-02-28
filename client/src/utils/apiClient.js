@@ -4,6 +4,7 @@ import axios from 'axios';
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   timeout: 10000, // 10 seconds timeout
+  withCredentials: true, // Enable credentials for cross-origin requests
   headers: {
     'Content-Type': 'application/json',
   },
