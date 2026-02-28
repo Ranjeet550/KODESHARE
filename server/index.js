@@ -16,12 +16,34 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || '*',
+// CORS configuration – only allow the frontend origin that we expect.
+// We avoid using '*' when credentials are enabled because browsers will reject
+// the response in that case.  If FRONTEND_URL is not set we'll still accept any
+// origin during development but log a warning so the problem is obvious.
+const frontendUrl = process.env.FRONTEND_URL;
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (e.g. curl, mobile apps)
+    if (!origin) return callback(null, true);
+
+    if (frontendUrl) {
+      if (origin === frontendUrl) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    }
+
+    // no FRONTEND_URL defined – permissive for local development
+    console.warn('⚠️ FRONTEND_URL not set; allowing all origins (use only in development)');
+    callback(null, true);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
-}));
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(compression());
