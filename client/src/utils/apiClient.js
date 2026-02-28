@@ -17,9 +17,11 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers['x-auth-token'] = token;
     }
+    console.log('[API] Request:', config.method.toUpperCase(), config.url);
     return config;
   },
   (error) => {
+    console.error('[API] Request error:', error);
     return Promise.reject(error);
   }
 );
@@ -27,13 +29,21 @@ apiClient.interceptors.request.use(
 // Response interceptor to handle common errors
 apiClient.interceptors.response.use(
   (response) => {
+    console.log('[API] Response:', response.status, response.config.url);
     return response;
   },
   (error) => {
+    console.error('[API] Response error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      message: error.message,
+      url: error.config?.url
+    });
+    
     // Handle 401 errors (unauthorized)
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      // You can add a redirect to login page here if needed
       window.location.href = '/login';
     }
     return Promise.reject(error);

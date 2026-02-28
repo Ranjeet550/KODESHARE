@@ -90,9 +90,20 @@ export const AuthProvider = ({ children }) => {
   const forgotPassword = async (email) => {
     try {
       setError(null);
+      console.log('[AuthContext] forgotPassword called with email:', email);
+      console.log('[AuthContext] API URL:', getApiUrl('/auth/forgot-password'));
+      
       const res = await apiClient.post(getApiUrl('/auth/forgot-password'), { email });
+      
+      console.log('[AuthContext] forgotPassword response:', res.data);
       return res.data;
     } catch (err) {
+      console.error('[AuthContext] forgotPassword error:', err);
+      console.error('[AuthContext] Error details:', {
+        status: err.response?.status,
+        data: err.response?.data,
+        message: err.message
+      });
       setError(err.response?.data?.message || 'Failed to send reset email');
       throw err;
     }

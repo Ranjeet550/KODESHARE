@@ -27,9 +27,13 @@ const ForgotPassword = () => {
     try {
       setLoading(true);
       setFormError('');
+      
+      console.log('[ForgotPassword] Submitting email:', email);
 
       // Call forgotPassword from context
       const response = await forgotPassword(email);
+      
+      console.log('[ForgotPassword] Success:', response);
       
       // Set success message
       setSuccess(true);
@@ -42,7 +46,10 @@ const ForgotPassword = () => {
         navigate('/verify-otp');
       }, 2000);
     } catch (err) {
-      setFormError(err.response?.data?.message || 'Failed to send reset email');
+      console.error('[ForgotPassword] Error:', err);
+      console.error('[ForgotPassword] Error response:', err.response);
+      console.error('[ForgotPassword] Error message:', err.message);
+      setFormError(err.response?.data?.message || err.message || 'Failed to send reset email');
     } finally {
       setLoading(false);
     }

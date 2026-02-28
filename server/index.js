@@ -23,48 +23,9 @@ const server = http.createServer(app);
 const frontendUrl = process.env.FRONTEND_URL;
 
 const corsOptions = {
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      'https://kodeshare.in',
-      'https://www.kodeshare.in',
-      'https://kodeshare-alpha.vercel.app',
-      'http://localhost:3000',
-      'http://localhost:5173'
-    ];
-    
-    // log every incoming origin for diagnostics
-    console.log('[CORS] Incoming origin:', origin);
-
-    // allow requests with no origin (e.g. curl, mobile apps, same-origin)
-    if (!origin) {
-      console.log('[CORS] No origin header - allowing');
-      return callback(null, true);
-    }
-
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
-      console.log('[CORS] Origin allowed:', origin);
-      return callback(null, true);
-    }
-
-    // Also check FRONTEND_URL from env if set
-    const frontendUrl = process.env.FRONTEND_URL;
-    if (frontendUrl) {
-      const normalizedOrigin = origin.replace(/\/$/, '');
-      const normalizedFrontend = frontendUrl.replace(/\/$/, '');
-      
-      if (normalizedOrigin === normalizedFrontend) {
-        console.log('[CORS] Origin matches FRONTEND_URL - allowing');
-        return callback(null, true);
-      }
-    }
-
-    // Log the mismatch but still allow (for debugging)
-    console.warn('[CORS] Origin not in whitelist:', origin);
-    return callback(null, true); // Allow anyway for now
-  },
+  origin: true, // Accept all origins - we handle it in middleware
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
   exposedHeaders: ['Content-Type']
 };
@@ -77,11 +38,34 @@ app.use(helmet({
 }));
 app.use(compression());
 
-// Add additional security headers
+// Add additional security and CORS headers BEFORE routes
 app.use((req, res, next) => {
+  // Set CORS headers explicitly
+  const origin = req.headers.origin;
+  const allowedOrigins = [
+    'https://kodeshare.in',
+    'https://www.kodeshare.in',
+    'https://kodeshare-alpha.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ];
+  
+  if (allowedOrigins.includes(origin) || !origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
+  
   res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-auth-token');
+  res.setHeader('Access-Control-Expose-Headers', 'Content-Type, X-Total-Count');
   res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  
   next();
 });
 
