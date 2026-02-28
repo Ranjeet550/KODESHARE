@@ -145,10 +145,20 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordOTPExpiry = otpExpiry;
     await user.save();
 
-    // Send OTP email
-    await sendOTPEmail(user.email, otp, user.username);
+    console.log('[auth] OTP generated and saved for', email, 'OTP:', otp);
 
-    console.log('[auth] OTP sent successfully to', email);
+    // Send OTP email asynchronously (don't wait for it)
+    // This prevents timeout issues
+    sendOTPEmail(user.email, otp, user.username)
+      .then(() => {
+        console.log('[auth] OTP email sent successfully to', email);
+      })
+      .catch((emailError) => {
+        console.error('[auth] Email send error:', emailError.message);
+        // Log but don't fail the request
+      });
+
+    // Return success immediately without waiting for email
     res.json({
       message: 'Password reset OTP sent to your email',
       email: user.email

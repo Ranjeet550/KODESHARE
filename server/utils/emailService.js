@@ -9,8 +9,19 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
+  connectionTimeout: 5000,
+  socketTimeout: 5000,
   logger: true,
   debug: true
+});
+
+// Verify transporter connection on startup
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('[Email] Transporter verification failed:', error);
+  } else {
+    console.log('[Email] Transporter verified successfully');
+  }
 });
 
 /**
@@ -22,6 +33,7 @@ const transporter = nodemailer.createTransport({
  */
 const sendEmail = async (to, subject, html) => {
   try {
+    console.log('[Email] Attempting to send email to:', to);
     const mailOptions = {
       from: `"KODESHARE" <${process.env.EMAIL_USER}>`,
       to,
@@ -30,10 +42,10 @@ const sendEmail = async (to, subject, html) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.messageId);
+    console.log('[Email] Email sent successfully:', info.messageId);
     return info;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('[Email] Error sending email:', error.message);
     throw error;
   }
 };

@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create axios instance with base URL from environment variable
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 30000, // 30 seconds timeout (increased from 10s)
   withCredentials: true, // Enable credentials for cross-origin requests
   headers: {
     'Content-Type': 'application/json',
