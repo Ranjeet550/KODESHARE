@@ -121,11 +121,16 @@ router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
 
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       console.log('[auth] forgot-password: user not found for', email);
-      return res.status(404).json({ message: 'User not found' });
+      // Don't reveal if user exists for security
+      return res.status(200).json({ message: 'If this email exists, an OTP has been sent' });
     }
 
     // Generate a 6-digit OTP
@@ -143,13 +148,14 @@ router.post('/forgot-password', async (req, res) => {
     // Send OTP email
     await sendOTPEmail(user.email, otp, user.username);
 
+    console.log('[auth] OTP sent successfully to', email);
     res.json({
       message: 'Password reset OTP sent to your email',
       email: user.email
     });
   } catch (error) {
     console.error('Forgot password error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 });
 

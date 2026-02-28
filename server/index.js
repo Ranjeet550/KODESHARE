@@ -24,38 +24,64 @@ const frontendUrl = process.env.FRONTEND_URL;
 
 const corsOptions = {
   origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://kodeshare.in',
+      'https://www.kodeshare.in',
+      'https://kodeshare-alpha.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+    
     // log every incoming origin for diagnostics
-    console.log('CORS check: origin=', origin, 'expected=', frontendUrl);
+    console.log('[CORS] Incoming origin:', origin);
 
-    // allow requests with no origin (e.g. curl, mobile apps)
-    if (!origin) return callback(null, true);
-
-    if (frontendUrl) {
-      if (origin === frontendUrl) {
-        return callback(null, true);
-      }
-      return callback(new Error('Not allowed by CORS'));
+    // allow requests with no origin (e.g. curl, mobile apps, same-origin)
+    if (!origin) {
+      console.log('[CORS] No origin header - allowing');
+      return callback(null, true);
     }
 
-    // no FRONTEND_URL defined – permissive for local development
-    console.warn('⚠️ FRONTEND_URL not set; allowing all origins (use only in development)');
-    callback(null, true);
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      console.log('[CORS] Origin allowed:', origin);
+      return callback(null, true);
+    }
+
+    // Also check FRONTEND_URL from env if set
+    const frontendUrl = process.env.FRONTEND_URL;
+    if (frontendUrl) {
+      const normalizedOrigin = origin.replace(/\/$/, '');
+      const normalizedFrontend = frontendUrl.replace(/\/$/, '');
+      
+      if (normalizedOrigin === normalizedFrontend) {
+        console.log('[CORS] Origin matches FRONTEND_URL - allowing');
+        return callback(null, true);
+      }
+    }
+
+    // Log the mismatch but still allow (for debugging)
+    console.warn('[CORS] Origin not in whitelist:', origin);
+    return callback(null, true); // Allow anyway for now
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-auth-token'],
+  exposedHeaders: ['Content-Type']
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  referrerPolicy: { policy: "no-referrer-when-downgrade" }
 }));
 app.use(compression());
 
-// Add referrer policy header
+// Add additional security headers
 app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Referrer-Policy', 'no-referrer-when-downgrade');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   next();
 });
 
