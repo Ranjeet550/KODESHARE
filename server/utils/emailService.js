@@ -1,5 +1,11 @@
 const nodemailer = require('nodemailer');
 
+console.log('[Email] Initializing email service with:');
+console.log('[Email] HOST:', process.env.EMAIL_HOST);
+console.log('[Email] PORT:', process.env.EMAIL_PORT);
+console.log('[Email] USER:', process.env.EMAIL_USER);
+console.log('[Email] PASS:', process.env.EMAIL_PASS ? '***' : 'NOT SET');
+
 // Create a transporter using SMTP
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -9,18 +15,22 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  connectionTimeout: 5000,
-  socketTimeout: 5000,
+  connectionTimeout: 10000,
+  socketTimeout: 10000,
   logger: true,
-  debug: true
+  debug: true,
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 // Verify transporter connection on startup
 transporter.verify((error, success) => {
   if (error) {
-    console.error('[Email] Transporter verification failed:', error);
+    console.error('[Email] ✗ Transporter verification failed:', error.message);
+    console.error('[Email] Full error:', error);
   } else {
-    console.log('[Email] Transporter verified successfully');
+    console.log('[Email] ✓ Transporter verified successfully');
   }
 });
 
@@ -34,6 +44,8 @@ transporter.verify((error, success) => {
 const sendEmail = async (to, subject, html) => {
   try {
     console.log('[Email] Attempting to send email to:', to);
+    console.log('[Email] Subject:', subject);
+    
     const mailOptions = {
       from: `"KODESHARE" <${process.env.EMAIL_USER}>`,
       to,
@@ -41,11 +53,18 @@ const sendEmail = async (to, subject, html) => {
       html
     };
 
+    console.log('[Email] Mail options:', { from: mailOptions.from, to: mailOptions.to, subject: mailOptions.subject });
+    
     const info = await transporter.sendMail(mailOptions);
-    console.log('[Email] Email sent successfully:', info.messageId);
+    console.log('[Email] ✓ Email sent successfully');
+    console.log('[Email] Message ID:', info.messageId);
+    console.log('[Email] Response:', info.response);
     return info;
   } catch (error) {
-    console.error('[Email] Error sending email:', error.message);
+    console.error('[Email] ✗ Error sending email:', error.message);
+    console.error('[Email] Error code:', error.code);
+    console.error('[Email] Error response:', error.response);
+    console.error('[Email] Full error:', error);
     throw error;
   }
 };
