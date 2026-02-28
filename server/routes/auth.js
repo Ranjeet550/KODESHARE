@@ -117,12 +117,14 @@ router.get('/me', async (req, res) => {
 
 // Request password reset (generate and send OTP)
 router.post('/forgot-password', async (req, res) => {
+  console.log('[auth] forgot-password called, origin=', req.headers.origin, 'body=', req.body);
   try {
     const { email } = req.body;
 
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('[auth] forgot-password: user not found for', email);
       return res.status(404).json({ message: 'User not found' });
     }
 

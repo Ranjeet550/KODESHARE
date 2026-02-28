@@ -24,6 +24,9 @@ const frontendUrl = process.env.FRONTEND_URL;
 
 const corsOptions = {
   origin: (origin, callback) => {
+    // log every incoming origin for diagnostics
+    console.log('CORS check: origin=', origin, 'expected=', frontendUrl);
+
     // allow requests with no origin (e.g. curl, mobile apps)
     if (!origin) return callback(null, true);
 
