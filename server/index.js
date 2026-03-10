@@ -7,9 +7,13 @@ const http = require('http');
 const { Server } = require('socket.io');
 const helmet = require('helmet');
 const compression = require('compression');
+const dns = require('dns');
 
 // Load environment variables
 dotenv.config();
+
+// Fix DNS resolution issues
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1', '1.0.0.1']);
 
 // Initialize Express app
 const app = express();
@@ -81,52 +85,103 @@ const io = new Server(server, {
 // MongoDB Connection
 console.log('Attempting to connect to MongoDB with URI:', process.env.MONGODB_URI?.substring(0, 50) + '...');
 
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 5000,
+const mongooseOptions = {
+  serverSelectionTimeoutMS: 10000,
   socketTimeoutMS: 45000,
-})
-  .then(async () => {
-    console.log('✓ Connected to MongoDB');
-    
-    // Fix the customId index issue
+  retryWrites: true,
+  w: 'majority',
+  maxPoolSize: 10,
+  minPoolSize: 2,
+  family: 4, // Force IPv4
+};
+
+const connectMongoDB = async (retries = 3) => {
+  for (let i = 0; i < retries; i++) {
     try {
-      console.log('Checking and fixing customId index...');
-      const collection = mongoose.connection.db.collection('codeshares');
+      await mongoose.connect(process.env.MONGODB_URI, mongooseOptions);
+      console.log('✓ Connected to MongoDB');
       
-      // Drop all indexes on customId field
+      // Fix the customId index issue
       try {
-        const indexes = await collection.listIndexes().toArray();
-        for (const index of indexes) {
-          if (index.key.customId === 1 && index.name !== '_id_') {
-            await collection.dropIndex(index.name);
-            console.log(`Dropped index: ${index.name}`);
+        console.log('Checking and fixing customId index...');
+        const collection = mongoose.connection.db.collection('codeshares');
+        
+        // Drop all indexes on customId field
+        try {
+          const indexes = await collection.listIndexes().toArray();
+          for (const index of indexes) {
+            if (index.key.customId === 1 && index.name !== '_id_') {
+              await collection.dropIndex(index.name);
+              console.log(`Dropped index: ${index.name}`);
+            }
           }
+        } catch (err) {
+          console.log('No existing customId indexes to drop');
         }
+        
+        // Create the new index with partial filter
+        await collection.createIndex(
+          { customId: 1 },
+          {
+            unique: true,
+            partialFilterExpression: { customId: { $exists: true } }
+          }
+        );
+        console.log('✓ Created new customId index with partial filter');
       } catch (err) {
-        console.log('No existing customId indexes to drop');
+        console.error('Index management error:', err.message);
       }
       
-      // Create the new index with partial filter
-      await collection.createIndex(
-        { customId: 1 },
-        {
-          unique: true,
-          partialFilterExpression: { customId: { $exists: true } }
-        }
-      );
-      console.log('✓ Created new customId index with partial filter');
+      return true;
     } catch (err) {
-      console.error('Index management error:', err.message);
+      console.error(`✗ MongoDB connection attempt ${i + 1}/${retries} failed:`, err.message);
+      if (i < retries - 1) {
+        console.log(`Retrying in 5 seconds...`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
     }
-  })
-  .catch((err) => {
-    console.error('✗ MongoDB connection error:', err.message);
-    console.error('Full error:', err);
-  });
+  }
+  
+  console.error('✗ Failed to connect to MongoDB after all retries');
+  return false;
+};
+
+connectMongoDB();
 
 // Import routes
 const authRoutes = require('./routes/auth');
 const codeShareRoutes = require('./routes/codeShare');
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    uptime: process.uptime()
+  };
+  res.json(health);
+});
+
+// DNS test endpoint
+app.get('/api/test-dns', async (req, res) => {
+  const dnsPromises = require('dns').promises;
+  try {
+    const mongoResult = await dnsPromises.resolve4('cluster0.txsr4.mongodb.net');
+    const gmailResult = await dnsPromises.resolve4('smtp.gmail.com');
+    res.json({
+      success: true,
+      mongodb: mongoResult,
+      gmail: gmailResult
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      code: err.code
+    });
+  }
+});
 
 // Use routes
 app.use('/api/auth', authRoutes);

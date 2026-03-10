@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+
+// Fix DNS resolution for email service
+dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1', '1.0.0.1']);
 
 console.log('[Email] Initializing email service with:');
 console.log('[Email] HOST:', process.env.EMAIL_HOST);
@@ -6,7 +10,7 @@ console.log('[Email] PORT:', process.env.EMAIL_PORT);
 console.log('[Email] USER:', process.env.EMAIL_USER);
 console.log('[Email] PASS:', process.env.EMAIL_PASS ? '***' : 'NOT SET');
 
-// Create a transporter using SMTP
+// Create a transporter using SMTP with enhanced configuration
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: parseInt(process.env.EMAIL_PORT),
@@ -15,24 +19,42 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  connectionTimeout: 10000,
-  socketTimeout: 10000,
+  connectionTimeout: 15000,
+  socketTimeout: 15000,
   logger: true,
   debug: true,
   tls: {
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    minVersion: 'TLSv1.2'
+  },
+  pool: {
+    maxConnections: 5,
+    maxMessages: 100,
+    rateDelta: 1000,
+    rateLimit: 5
   }
 });
 
-// Verify transporter connection on startup
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('[Email] ✗ Transporter verification failed:', error.message);
-    console.error('[Email] Full error:', error);
-  } else {
-    console.log('[Email] ✓ Transporter verified successfully');
+// Verify transporter connection on startup with retry
+const verifyTransporter = async (retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await transporter.verify();
+      console.log('[Email] ✓ Transporter verified successfully');
+      return true;
+    } catch (error) {
+      console.error(`[Email] ✗ Transporter verification attempt ${i + 1}/${retries} failed:`, error.message);
+      if (i < retries - 1) {
+        console.log('[Email] Retrying in 5 seconds...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      }
+    }
   }
-});
+  console.error('[Email] ✗ Failed to verify transporter after all retries');
+  return false;
+};
+
+verifyTransporter();
 
 /**
  * Send an email
@@ -41,31 +63,39 @@ transporter.verify((error, success) => {
  * @param {string} html - Email content in HTML format
  * @returns {Promise} - Nodemailer send mail promise
  */
-const sendEmail = async (to, subject, html) => {
-  try {
-    console.log('[Email] Attempting to send email to:', to);
-    console.log('[Email] Subject:', subject);
-    
-    const mailOptions = {
-      from: `"KODESHARE" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html
-    };
+const sendEmail = async (to, subject, html, retries = 3) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      console.log(`[Email] Attempting to send email to: ${to} (attempt ${i + 1}/${retries})`);
+      console.log('[Email] Subject:', subject);
+      
+      const mailOptions = {
+        from: `"KODESHARE" <${process.env.EMAIL_USER}>`,
+        to,
+        subject,
+        html
+      };
 
-    console.log('[Email] Mail options:', { from: mailOptions.from, to: mailOptions.to, subject: mailOptions.subject });
-    
-    const info = await transporter.sendMail(mailOptions);
-    console.log('[Email] ✓ Email sent successfully');
-    console.log('[Email] Message ID:', info.messageId);
-    console.log('[Email] Response:', info.response);
-    return info;
-  } catch (error) {
-    console.error('[Email] ✗ Error sending email:', error.message);
-    console.error('[Email] Error code:', error.code);
-    console.error('[Email] Error response:', error.response);
-    console.error('[Email] Full error:', error);
-    throw error;
+      console.log('[Email] Mail options:', { from: mailOptions.from, to: mailOptions.to, subject: mailOptions.subject });
+      
+      const info = await transporter.sendMail(mailOptions);
+      console.log('[Email] ✓ Email sent successfully');
+      console.log('[Email] Message ID:', info.messageId);
+      console.log('[Email] Response:', info.response);
+      return info;
+    } catch (error) {
+      console.error(`[Email] ✗ Error sending email (attempt ${i + 1}/${retries}):`, error.message);
+      console.error('[Email] Error code:', error.code);
+      console.error('[Email] Error response:', error.response);
+      
+      if (i < retries - 1) {
+        console.log('[Email] Retrying in 5 seconds...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      } else {
+        console.error('[Email] Full error:', error);
+        throw error;
+      }
+    }
   }
 };
 
