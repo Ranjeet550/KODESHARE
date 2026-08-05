@@ -5,6 +5,7 @@ import { io } from 'socket.io-client';
 import { getCodeShareById, updateCodeShare } from '../utils/api';
 import { ThemeContext } from '../context/ThemeContext';
 import { runCode, supportedLanguages, clientSideLanguages } from '../utils/codeRunner';
+import AIAssistant from '../components/AIAssistant';
 
 const CodeEditor = () => {
   const { id } = useParams();
@@ -187,6 +188,8 @@ const CodeEditor = () => {
 
   return (
     <div className="flex flex-col w-full h-screen bg-white dark:bg-gray-900">
+      <AIAssistant code={code} language={language} output={output} onError={(err) => setError(err)} />
+      
       {/* Header */}
       <header className="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
         <div className="w-full px-3 py-2 md:px-4 md:py-3">
