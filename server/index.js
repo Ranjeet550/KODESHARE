@@ -9,8 +9,17 @@ const helmet = require('helmet');
 const compression = require('compression');
 const dns = require('dns');
 
-// Load environment variables
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const path = require('path');
+const fs = require('fs');
+const nodeEnv = process.env.NODE_ENV || 'development';
+const envFilePath = path.resolve(__dirname, `.env.${nodeEnv}`);
+
+if (fs.existsSync(envFilePath)) {
+  dotenv.config({ path: envFilePath });
+} else {
+  dotenv.config(); // Fallback to default .env
+}
 
 // Fix DNS resolution issues
 dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1', '1.0.0.1']);
@@ -49,9 +58,11 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'https://kodeshare.in',
     'https://www.kodeshare.in',
+    'https://api.kodeshare.in',
     'https://kodeshare-alpha.vercel.app',
     'http://localhost:3000',
-    'http://localhost:5173'
+    'http://localhost:5173',
+    ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
   ];
   
   if (allowedOrigins.includes(origin) || !origin) {
@@ -76,7 +87,7 @@ app.use((req, res, next) => {
 // Socket.io setup
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || '*',
+    origin: (origin, callback) => callback(null, true),
     methods: ['GET', 'POST'],
     credentials: true
   },
@@ -187,7 +198,7 @@ app.get('/api/test-dns', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/codeshare', codeShareRoutes);
 
-// Track active users in rooms
+// Track active users in rooms by canonical key
 const roomUsers = new Map();
 
 // Socket.io connection
@@ -198,38 +209,50 @@ io.on('connection', (socket) => {
   // Join a code sharing room
   socket.on('join-room', async (roomId) => {
     try {
-      // Store the current room for this socket
-      currentRoom = roomId;
+      if (!roomId) return;
+      currentRoom = String(roomId);
 
-      // Check if this is a custom ID
+      // Check if this is a custom ID or a MongoDB ID
       let codeShare = await CodeShare.findOne({ customId: roomId });
-
-      // If not found by custom ID, check if it's a MongoDB ID
       if (!codeShare && mongoose.Types.ObjectId.isValid(roomId)) {
         codeShare = await CodeShare.findById(roomId);
       }
 
-      // If still not found, create a new code share with the custom ID
-      if (!codeShare && !mongoose.Types.ObjectId.isValid(roomId)) {
-        // This might be a custom ID that doesn't exist yet
-        // The actual creation will happen when the GET request is made
-        console.log(`User trying to join non-existent room with potential custom ID: ${roomId}`);
+      // Collect all room aliases for this document
+      const roomsToJoin = new Set([String(roomId)]);
+      if (codeShare) {
+        if (codeShare._id) roomsToJoin.add(String(codeShare._id));
+        if (codeShare.customId) roomsToJoin.add(String(codeShare.customId));
       }
 
-      // Join the room
-      socket.join(roomId);
+      socket.canonicalRooms = roomsToJoin;
 
-      // Update user count in the room
-      if (!roomUsers.has(roomId)) {
-        roomUsers.set(roomId, new Set());
+      // Join all alias rooms
+      for (const r of roomsToJoin) {
+        socket.join(r);
       }
-      roomUsers.get(roomId).add(socket.id);
 
-      // Emit the updated user count to all clients in the room
-      const userCount = roomUsers.get(roomId).size;
-      io.to(roomId).emit('user-joined', userCount);
+      // Track active users by canonical key
+      const canonicalKey = codeShare ? String(codeShare._id) : String(roomId);
+      socket.canonicalKey = canonicalKey;
 
-      console.log(`User ${socket.id} joined room: ${roomId}. Total users: ${userCount}`);
+      if (!roomUsers.has(canonicalKey)) {
+        roomUsers.set(canonicalKey, new Set());
+      }
+
+      const alreadyInRoom = roomUsers.get(canonicalKey).has(socket.id);
+      roomUsers.get(canonicalKey).add(socket.id);
+
+      const userCount = roomUsers.get(canonicalKey).size;
+
+      // Only emit user-joined if this is a new socket joining the room
+      if (!alreadyInRoom) {
+        for (const r of roomsToJoin) {
+          io.to(r).emit('user-joined', userCount);
+        }
+      }
+
+      console.log(`User ${socket.id} joined room(s): ${Array.from(roomsToJoin).join(', ')}. Total users: ${userCount}`);
     } catch (error) {
       console.error('Error in join-room:', error);
     }
@@ -237,29 +260,57 @@ io.on('connection', (socket) => {
 
   // Handle code changes
   socket.on('code-change', (data) => {
-    socket.to(data.roomId).emit('receive-code-change', data.code);
+    if (!data) return;
+    const code = data.code;
+    const targetRoom = data.roomId ? String(data.roomId) : currentRoom;
+
+    if (targetRoom) {
+      socket.to(targetRoom).emit('receive-code-change', code);
+    }
+    if (data.aliasRoomId) {
+      socket.to(String(data.aliasRoomId)).emit('receive-code-change', code);
+    }
+    if (socket.canonicalRooms) {
+      for (const r of socket.canonicalRooms) {
+        if (r !== targetRoom && r !== String(data.aliasRoomId)) {
+          socket.to(r).emit('receive-code-change', code);
+        }
+      }
+    }
+  });
+
+  // Helper to purge socket from all tracked rooms
+  const handleUserLeave = () => {
+    for (const [roomKey, usersSet] of roomUsers.entries()) {
+      if (usersSet.has(socket.id)) {
+        usersSet.delete(socket.id);
+        const userCount = usersSet.size;
+
+        io.to(roomKey).emit('user-left', userCount);
+        if (socket.canonicalRooms) {
+          for (const r of socket.canonicalRooms) {
+            io.to(r).emit('user-left', userCount);
+          }
+        }
+
+        if (userCount === 0) {
+          roomUsers.delete(roomKey);
+        }
+
+        console.log(`User ${socket.id} left room: ${roomKey}. Remaining: ${userCount}`);
+      }
+    }
+  };
+
+  // Handle explicit leave-room
+  socket.on('leave-room', () => {
+    handleUserLeave();
   });
 
   // Handle disconnection
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
-
-    // If the user was in a room, update the user count
-    if (currentRoom && roomUsers.has(currentRoom)) {
-      roomUsers.get(currentRoom).delete(socket.id);
-
-      const userCount = roomUsers.get(currentRoom).size;
-
-      // Emit the updated user count to all clients in the room
-      io.to(currentRoom).emit('user-left', userCount);
-
-      // Clean up empty rooms
-      if (userCount === 0) {
-        roomUsers.delete(currentRoom);
-      }
-
-      console.log(`User left room: ${currentRoom}. Total users: ${userCount}`);
-    }
+    handleUserLeave();
   });
 });
 

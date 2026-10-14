@@ -194,29 +194,29 @@ const AIAssistant = ({ code, language, output, onError }) => {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 group">
+    <div className="fixed bottom-12 sm:bottom-4 right-3 sm:right-4 z-50 group">
       {/* Floating Button */}
       <button
         onClick={() => {
           setIsOpen(!isOpen);
           if (!isOpen) setIsExpanded(false);
         }}
-        className="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 dark:from-purple-600 dark:via-pink-600 dark:to-red-600 dark:hover:from-purple-700 dark:hover:via-pink-700 dark:hover:to-red-700 text-white rounded-full p-4 shadow-xl dark:shadow-purple-900/50 transition-all hover:shadow-2xl hover:scale-110 relative group"
+        className="bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 dark:from-purple-600 dark:via-pink-600 dark:to-red-600 dark:hover:from-purple-700 dark:hover:via-pink-700 dark:hover:to-red-700 text-white rounded-full p-3 sm:p-4 shadow-xl dark:shadow-purple-900/50 transition-all hover:shadow-2xl hover:scale-105 relative group"
         title="AI Assistant"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
-        <span className="absolute top-0 right-0 h-3 w-3 bg-green-400 dark:bg-green-500 rounded-full animate-pulse border-2 border-white dark:border-gray-800"></span>
+        <span className="absolute top-0 right-0 h-2.5 w-2.5 sm:h-3 sm:w-3 bg-green-400 dark:bg-green-500 rounded-full animate-pulse border-2 border-white dark:border-gray-800"></span>
       </button>
 
       {/* Assistant Panel */}
       {isOpen && (
         <div
-          className={`absolute bottom-16 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl dark:shadow-gray-900/80 border border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden backdrop-blur-sm transition-all duration-300 ${
+          className={`absolute bottom-14 sm:bottom-16 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl dark:shadow-gray-900/80 border border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden backdrop-blur-sm transition-all duration-300 ${
             isExpanded
-              ? 'w-[45vw] max-h-[90vh]'
-              : 'w-96 max-h-[600px]'
+              ? 'w-[92vw] sm:w-[45vw] max-h-[85vh]'
+              : 'w-[calc(100vw-1.5rem)] sm:w-96 max-h-[75vh] sm:max-h-[600px]'
           } animate-in fade-in slide-in-from-bottom-2 duration-300`}
         >
           {/* Header */}

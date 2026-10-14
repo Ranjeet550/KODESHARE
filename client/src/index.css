@@ -65,3 +65,16 @@ body::-webkit-scrollbar-thumb:hover {
 .animation-delay-4000 {
     animation-delay: 4s;
 }
+
+/* Enable mobile touch text selection in Monaco Editor */
+.monaco-editor,
+.monaco-editor .view-lines,
+.monaco-editor .view-line,
+.monaco-editor .inputarea {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}
+
+.monaco-editor .view-lines {
+    touch-action: pan-x pan-y !important;
+}
