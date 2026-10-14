@@ -533,16 +533,18 @@ const Home = () => {
               </div>
               <button
                 onClick={handleCreateNewCodeShare}
-                disabled={loading || !customId.trim()}
-                className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#03A791] to-[#81E7AF] text-white rounded-xl font-bold hover:from-[#028a73] hover:to-[#6dd19c] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
+                disabled={loading}
+                className="w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 bg-gradient-to-r from-[#00B49F] via-[#03A791] to-[#028A78] hover:from-[#00c7af] hover:to-[#039d88] text-white rounded-xl font-extrabold tracking-wide transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-[#03A791]/30 hover:shadow-[#03A791]/50 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap border border-white/25"
               >
                 {loading && (
-                  <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                 )}
-                {loading ? "Creating..." : "Create"}
+                <span className="text-white font-extrabold tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
+                  {loading ? "Creating..." : "Create"}
+                </span>
               </button>
             </div>
 
@@ -575,23 +577,25 @@ const Home = () => {
               <button
                 onClick={handleJoinCodeShare}
                 disabled={!joinId.trim()}
-                className="w-full sm:w-auto px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-[#81E7AF] to-[#03A791] text-white rounded-xl font-bold hover:from-[#6dd19c] hover:to-[#028a73] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
+                className="w-full sm:w-auto px-6 sm:px-7 py-2.5 sm:py-3 bg-gradient-to-r from-[#00B49F] via-[#03A791] to-[#028A78] hover:from-[#00c7af] hover:to-[#039d88] text-white rounded-xl font-extrabold tracking-wide transition-all duration-300 disabled:opacity-75 disabled:cursor-not-allowed shadow-lg shadow-[#03A791]/30 hover:shadow-[#03A791]/50 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap border border-white/25"
               >
                 <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
+                  strokeWidth={2.5}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M13 10V3L4 14h7v7l9-11h-7z"
                   />
                 </svg>
-                Join
+                <span className="text-white font-extrabold tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
+                  Join
+                </span>
               </button>
             </div>
           </div>
